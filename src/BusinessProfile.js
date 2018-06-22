@@ -5,6 +5,7 @@ import TinyMCE from 'react-tinymce'
 import './stylesheet.css'
 import axios from "axios";
 import { toast } from "react-toastify"
+import sanitizeHtml from 'sanitize-html';
 
 export default class BusinessRegistration extends React.Component{
     constructor(props) {
@@ -18,7 +19,8 @@ export default class BusinessRegistration extends React.Component{
             contact_number: '',
             business_email: '',
             business_description: '',
-            business_id: ''
+            business_id: '',
+            reviews: []
 
 
         }
@@ -49,14 +51,51 @@ export default class BusinessRegistration extends React.Component{
                 toast.error("Business with id "+id +" not found", {position: toast.POSITION.BOTTOM_CENTER})
 
             });
+        axios.get(`http://localhost:5000/api/v2/businesses/${id}/reviews`)
+            .then(response =>{
+                console.log(response.data['Business Reviews'])
+                this.setState({reviews: response.data["Business Reviews"]})
+            })
+            .catch(error => {
+                toast.error(error.response.data.Message, {position: toast.POSITION.BOTTOM_CENTER})
+            })
     }
 
     handleReviewChange = (e) =>{
-        console.log(e.target.value);
-        this.setState({review: e.target.value})
+        this.setState({[e.target.name]: e.target.getContent()});
     };
+    handleSubmit = e =>{
+        e.preventDefault();
+        const review = {review: this.state.review}
+        console.log(this.state.review)
+        axios.post(`http://localhost:5000/api/v2/businesses/${this.state.business_id}/reviews`, JSON.stringify(review),
+        {
+            headers: {'Content-Type':'application/json'}
+        })
+        .then(res => {
+            if (res.data.Status === "Success") {
+                toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
+                this.setState({is_authenticated: true});
+
+            }
+    })
+    .catch(error => {
+        toast.error(error.response.data.Message, {position: toast.POSITION.BOTTOM_CENTER});
+    })
+}
 
     render(){
+        const {reviews} =  this.state
+        // console.log(reviews["review"])
+        function createMarkup(review){
+            // return {__html: review};
+            return {__html: review.review};
+          }
+        
+
+        let review_list = reviews.map((review, index)=>(<ul key={index}><li  dangerouslySetInnerHTML={createMarkup(review)}>
+           </li></ul>))
+      
         return(
             <div>
                 <NavigationBar auth={this.state.is_authenticated}/>
@@ -65,7 +104,7 @@ export default class BusinessRegistration extends React.Component{
 
                         <Col xs="7">
                             <div className="my-content-left">
-                    <Form>
+                    <form onSubmit={this.handleSubmit}>
                         <FormGroup  >
 
                                 <h1 style={{fontSize: "40px"}} className="my-label-fontcolor">Business Profile</h1>
@@ -109,18 +148,19 @@ export default class BusinessRegistration extends React.Component{
                         </FormGroup>
 
                                     <b><Label for="text_area">Reviews:</Label></b><br/>
-                                     <label className="profile-labels">This business is awesome</label><br/>
-                                    <label className="profile-labels">This business rocks</label>
+                                    {review_list}
 
                         <FormGroup>
 
                                 <b><Label for="text_area">Add Business Review:</Label></b><br/>
                                 <TinyMCE
-                                    content="<p>This is the initial content of the editor</p>"
                                     config={{
+                                        menubar: false,
+                                        statusbar: false,
                                         plugins: 'autolink link image lists print preview',
-                                        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright'
+                                        toolbar: '| bold italic | alignleft aligncenter alignright'
                                     }}
+                                    id = "content"
                                     onChange={this.handleReviewChange}
                                 />
 
@@ -130,7 +170,7 @@ export default class BusinessRegistration extends React.Component{
                                 <button style={{borderRadius : "20px"}} className={"btn btn-lg btn-info btn-block"} >Add Review </button>
 
                         </FormGroup>
-                    </Form>
+                    </form>
                             </div>
                         </Col>
                         <Col xs="5">

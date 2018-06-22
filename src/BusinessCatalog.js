@@ -40,10 +40,10 @@ export default class BusinessCatalog extends React.Component {
 
     render(){
 
-        let businesses = this.state.businesses.map(business=>{
+        let businesses = this.state.businesses.map((business, index)=>{
             return (
-                <Col sm={"4"}>
-                    <Card body style={{marginTop: '20px'}} key={business.business_id}>
+                <Col sm={"4"} key={index}>
+                    <Card body style={{marginTop: '20px'}} >
 
                         <CardBody>
                             <CardHeader tag="h1" >{business.business_name}</CardHeader>

@@ -17,24 +17,11 @@ export default class LoginForm extends React.Component {
         }
     }
 
-    componentWillMount(){
-        console.log(this.props.getAuth());
-    }
-    componentDidMount(){
-        console.log(this.state.is_authenticated);
-    }
-
-
-    handleUsernameChange = event => {
-        this.setState({ username: event.target.value });
-        console.log(event.target.value)
+    handleChange = event => {
+        this.setState({ [event.target.name]: event.target.value });
 
     };
-    handlePasswordChange = e => {
-        this.setState({password: e.target.value});
-        console.log(e.target.value)
-
-    };
+  
     handleSubmit = event => {
 
 
@@ -46,33 +33,26 @@ export default class LoginForm extends React.Component {
             password: this.state.password
 
         };
-
         axios.post('http://localhost:5000/api/v2/login',
             JSON.stringify(user),
             {
                 headers: {'Content-Type':'application/json'}
             })
-            .then(res => {
-
-                if (res.data.Status === "Success") {
-                    toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
-                    localStorage.setItem('token', res.data.Token);
+            .then(response => {
+                console.log(response.data.Status)
+                if (response.data.Status === "Success") {
+                    toast.success(response.data.Message, {position: toast.POSITION.TOP_CENTER});
+                    localStorage.setItem('token', response.data.Token);
                     this.setState({is_authenticated: true});
-
-                }
-                else{
-
-                    console.log(false);
 
                 }
 
 
             })
             .catch(error=>{
-                toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
-                console.log(error.response.data);
-                console.log(error.response);
-                console.log(error)
+                console.log(error);
+                // toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
+               
 
             })
     };
@@ -104,8 +84,8 @@ export default class LoginForm extends React.Component {
                         </FormGroup>
                          <FormGroup >
                              <Col sm={"9"}>
-                                 <label id="username" className="label-fontcolor"  >Username:</label>
-                                 <input type="text" style={{borderRadius: "20px"}} onChange={this.handleUsernameChange}
+                                 <label id="username" name="username" className="label-fontcolor"  >Username:</label>
+                                 <input name="username" type="text" style={{borderRadius: "20px"}} onChange={this.handleChange}
                                         className="form-control" required="true">
 
                                  </input>
@@ -114,21 +94,13 @@ export default class LoginForm extends React.Component {
                          <FormGroup >
                              <Col sm={"9"}>
                                  <label className="label-fontcolor"  >Password:</label>
-                                 <input type="password" onChange={this.handlePasswordChange}
+                                 <input name="password" type="password" onChange={this.handleChange}
                                         id="password" style={{borderRadius : "20px"}} className="form-control"
                                         required="true">
 
                                  </input>
                              </Col>
                          </FormGroup>
-                        <FormGroup>
-                            <Col sm={"9"}>
-                                <Label check  className="rememberme">
-                                    <Input type="checkbox" />
-                                        Remember Me
-                                </Label>
-                            </Col>
-                        </FormGroup>
                         <FormGroup>
                             <Col sm={"9"}>
                                 <button style={{borderRadius : "20px"}} className={"btn btn-lg btn-info btn-block"}>

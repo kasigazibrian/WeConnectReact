@@ -1,9 +1,11 @@
 import React from 'react';
 import "./stylesheet.css";
 import {  Form, FormGroup, Label, Container, Col, Input } from 'reactstrap';
-import axios from "axios/index";
+import axios from "axios";
 import { toast } from 'react-toastify'
 import NavigationBar from "./NavigationBar";
+import zxcvbn from "zxcvbn"
+import { Redirect } from 'react-router-dom'
 
 
 export default class SignupForm extends React.Component {
@@ -17,7 +19,11 @@ export default class SignupForm extends React.Component {
                     last_name: '',
                     gender: '',
                     confirm_password: '',
-                    is_authenticated: this.props.getAuth()
+                    is_authenticated: false,
+                    suggestions: [],
+                    score: "",
+                    message: "",
+                    added_successfully: false
                 }
 
 }
@@ -29,45 +35,24 @@ export default class SignupForm extends React.Component {
         else( this.setState({is_authenticated: true}) )
     }
 
-    handleConfirmPassword = event => {
-           this.setState({confirm_password: event.target.value})
-
-    };
-
-    handleUsernameChange = event => {
-        this.setState({ username: event.target.value });
-        console.log(event.target.value)
-
-    };
     handlePasswordChange = e => {
-            this.setState({password: e.target.value});
-            console.log(e.target.value)
+        let evaluation = zxcvbn(e.target.value);
+        this.setState({password: e.target.value, score: evaluation.score,
+            suggestions: evaluation.feedback.suggestions, message: ""});
 
     };
-    handleEmailChange = e => {
-        this.setState({email: e.target.value});
-        console.log(e.target.value)
+
+    handleChange = e =>{
+        this.setState({[e.target.name] : e.target.value})
+
     };
 
-    handleFirstNameChange = e =>{
-        this.setState({first_name : e.target.value});
-        console.log(e.target.value)
-    };
-
-    handleLastNameChange = e =>{
-        this.setState({last_name : e.target.value})
-    };
-
-    handleGenderChange = e =>{
-        this.setState({gender : e.target.value});
-        console.log(e.target.value)
-    };
+   
     handleSubmit = event => {
         event.preventDefault();
 
         if (this.state.password !== this.state.confirm_password){
 
-            console.log(false);
             toast.error("Passwords must match",{position: toast.POSITION.BOTTOM_CENTER});
         }
         else{
@@ -86,21 +71,63 @@ export default class SignupForm extends React.Component {
                 headers: {'Content-Type':'application/json'}
             })
             .then(res => {
-                toast.success(res.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
-                console.log(res.data);
+                this.setState({added_successfully: true})
+                toast.success(res.data.Message+'! You can now login!',{position: toast.POSITION.BOTTOM_CENTER});
             })
             .catch(error=>{
                 toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
-                console.log(error.response.data);
             })
     }
     };
     render() {
 
+        if (this.state.added_successfully){
+            return (
+                <div>
+                    <Redirect to={{
+                        pathname: '/login',
+                        state: {is_authenticated: true }
+                    }} />
+                </div>
+            );
+        }
+        const {suggestions, score} = this.state;
+        let css_class = "";
+        let message = "";
+        if (score === 0){
+            console.log("weak");
+            css_class = "weak";
+            message = "Weak";
+
+        }
+        else if (score === 1){
+            console.log("fair");
+            css_class = "fair";
+            message = "Fair";
+        }
+        else if (score === 2){
+            console.log("Good");
+            css_class = "good";
+            message = "Good";
+        }
+        else if (score === 3){
+            console.log("Strong");
+            css_class = "strong";
+            message = "Strong";
+        }
+        else if (score === 4){
+            console.log("Very Strong");
+            css_class = "very-strong";
+            message = "Very Strong";
+        }
+        else {
+            message = "";
+            css_class = ""
+        }
 
         return (
             <div className="signup-background-image">
-                <NavigationBar auth={this.props.getAuth()}/>
+                <NavigationBar auth={this.state.is_authenticated}/>
             <div className={"signup-wrapping"}>
                 <Container >
                     <Form onSubmit={this.handleSubmit}>
@@ -112,7 +139,7 @@ export default class SignupForm extends React.Component {
                         <FormGroup >
                             <Col sm={"9"}>
                                 <label id="first-name" className="label-fontcolor"  >First Name:</label>
-                                <input onChange={this.handleFirstNameChange} type="text" id="first_name"
+                                <input onChange={this.handleChange} name="first_name" type="text" id="first_name"
                                        style={{borderRadius: "20px"}} className="form-control" required="true">
 
                                 </input>
@@ -120,8 +147,8 @@ export default class SignupForm extends React.Component {
                         </FormGroup>
                         <FormGroup >
                             <Col sm={"9"}>
-                                <label id="last-name"  className="label-fontcolor"  >Last Name:</label>
-                                <input onChange={this.handleLastNameChange} type="text" id="last_name"
+                                <label id="last-name" name="last_name"  className="label-fontcolor"  >Last Name:</label>
+                                <input name="last_name" onChange={this.handleChange} type="text" id="last_name"
                                        style={{borderRadius: "20px"}}
                                        className="form-control" required="true">
 
@@ -131,7 +158,7 @@ export default class SignupForm extends React.Component {
                         <FormGroup >
                             <Col sm={"9"}>
                                 <label id="username_label" className="label-fontcolor"  >Username:</label>
-                                <input onChange={this.handleUsernameChange} type="text" id="username"
+                                <input name="username" onChange={this.handleChange} type="text" id="username"
                                        style={{borderRadius: "20px"}} className="form-control" required="true">
 
                                 </input>
@@ -140,16 +167,20 @@ export default class SignupForm extends React.Component {
                         <FormGroup >
                             <Col sm={"9"}>
                                 <label id="password" className="label-fontcolor"  >Password:</label>
-                                <input onChange={this.handlePasswordChange} type="password" id="password-input"
+                                <input name="password" onChange={this.handlePasswordChange} type="password" id="password-input"
                                        style={{borderRadius : "20px"}} className="form-control" required="true">
 
-                                </input>
+                                </input>  <span id="passwordStrength" className={css_class} >{message}</span>
+                                <ul>
+                                    {suggestions.map((suggestion, index)=>
+                                        <li className="label-fontcolor" key={index}>{suggestion}</li>)}
+                                </ul>
                             </Col>
                         </FormGroup>
                         <FormGroup >
                             <Col sm={"9"}>
                                 <label className="label-fontcolor"  >Confirm Password:</label>
-                                <input type="password" onChange={this.handleConfirmPassword} id="confirm-password"
+                                <input name="confirm_password" type="password" onChange={this.handleChange} id="confirm-password"
                                        style={{borderRadius : "20px"}}
                                        className="form-control" required="true">
 
@@ -159,7 +190,7 @@ export default class SignupForm extends React.Component {
                         <FormGroup >
                             <Col sm={"9"}>
                                 <label id="email" className="label-fontcolor">Email:</label>
-                                <input id="email-input" onChange={this.handleEmailChange} type="text" style={{borderRadius: "20px"}}
+                                <input name="email" id="email-input" onChange={this.handleChange} type="text" style={{borderRadius: "20px"}}
                                        className="form-control" required="true">
 
                                 </input>
@@ -172,14 +203,20 @@ export default class SignupForm extends React.Component {
                             <Col sm={"9"}>
 
                                 <Label check className={"label-fontcolor"}>
-                                    <Input onChange={this.handleGenderChange} type="radio" value={"male"} name="gender" />
+                                    <Input onChange={this.handleChange} type="radio" value={"male"} name="gender" />
                                      Male
                                 </Label>
                             </Col>
                             <Col sm={"9"}>
                                 <Label check className={"label-fontcolor"}>
-                                    <Input type="radio" onChange={this.handleGenderChange} value={"female"} name="gender" />
+                                    <Input type="radio" onChange={this.handleChange} value={"female"} name="gender" />
                                     Female
+                                </Label>
+                            </Col>
+                            <Col sm={"9"}>
+                                <Label check className={"label-fontcolor"}>
+                                    <Input type="radio" onChange={this.handleChange} value={"other"} name="gender" />
+                                    Other
                                 </Label>
                             </Col>
 

@@ -94,8 +94,7 @@ class EditBusiness extends React.Component{
         axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
         axios.put(`http://localhost:5000/api/v2/businesses/${id}`,
             JSON.stringify(business),
-            {
-                headers: {'Content-Type': 'application/json'}
+            {headers: {'Content-Type': 'application/json'}
             })
             .then(res => {
                 toast.success(res.data.Message, {position: toast.POSITION.BOTTOM_CENTER});

@@ -19,7 +19,8 @@ import LogOut from "./Logout";
 import ResetPassword from "./ResetPassword";
 import EditBusiness from "./EditBusiness";
 import DeleteBusiness from './DeleteBusiness'
-
+import SearchResults from "./SearchResults";
+import PasswordReset from "./passwordreset"
 
 
 
@@ -28,7 +29,12 @@ constructor(props){
     super(props);
     this.state = {
         is_authenticated: false
-    }
+    };
+    this.getAuth = this.getAuth.bind(this);
+    this.setAuth = this.setAuth.bind(this);
+    this.unsetAuth = this.unsetAuth.bind(this);
+    
+
 }
 
 getAuth = ()=>{
@@ -58,8 +64,9 @@ unsetAuth = ()=>{
                                                                                 setAuth={this.setAuth}
                                                                                 getAuth={this.getAuth}/>} />
                   <Route exact strict path="/signup" component={()=> <SignupForm getAuth={this.getAuth}/>} />
-                  <Route exact strict path="/reset_password" component={()=>(<ResetPassword getAuth={this.getAuth}/>)}/>
+                  <Route exact strict path="/reset_password" component={()=>(<PasswordReset buttonLabel={"Reset Password"}/>)}/>
                   <Route strict path="/businesses/:business_id" component={BusinessProfile}/>
+                  <Route strict path="/search_results" component={SearchResults}/>
                   <Route strict path="/edit_business/:business_id" component={()=><EditBusiness getAuth={this.getAuth}/>}/>
                   <Route strict path="/delete_business/:business_id" component={()=><DeleteBusiness getAuth={this.getAuth}/>}/>
               </div>

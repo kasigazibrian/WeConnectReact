@@ -88,12 +88,15 @@
  .my-labels{
      font-size: 20px;
      color: white !important;
+     margin-top: 12px;
+     width: 80px;
  }
 
  .my-input{
      height: 37px;
      width: 300px;
      border-radius: 5px;
+     margin-top: 12px;
  }
 
  .my-h1{
@@ -138,4 +141,25 @@
 .profile-labels{
     font-family: "Comic Sans MS";
     font-size: 15px;
+}
+
+.weak{
+    color: red;
+    padding-left: 40px;
+}
+.fair{
+    color: orange;
+    padding-left: 40px;
+}
+.strong{
+    color: lightgreen;
+    padding-left: 40px;
+}
+.good{
+    color: yellow;
+    padding-left: 40px;
+}
+.very-strong{
+    color: green;
+    padding-left: 40px;
 }
