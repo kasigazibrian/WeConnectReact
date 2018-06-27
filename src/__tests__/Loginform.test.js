@@ -1,31 +1,29 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { shallowToJson } from 'enzyme-to-json'
-import LoginForm from "../Loginform";
-// import axios from 'axios'
+import LoginForm from "../components/user/Loginform";
+import axios from 'axios'
+import { MemoryRouter }    from 'react-router-dom';
 // import moxios from 'moxios'
-// import MockAdapter from 'axios-mock-adapter';
+import MockAdapter from 'axios-mock-adapter';
 // import NavigationBar from "../NavigationBar";
 // import mockAxios from 'jest-mock-axios';
-import mockAxios from '../__mocks__/axios';
-
+// import mockAxios from '../__mocks__/axios';
 
 
 describe('Login Component', ()=>{
 
-    const wrapper = mount(<LoginForm />);
-    
-    
-   
-    // let mockAdapter = new MockAdapter(axios);
+    const wrapper = shallow(<MemoryRouter><LoginForm/></MemoryRouter>);
+    let mock = new MockAdapter(axios);
     it("Test it mounts correctly", ()=>{
+        
+    
         // let spy = jest.spyOn(LoginForm.prototype, "handleSubmit");
         // console.log(LoginForm.prototype);
-        const wrapper = mount(<LoginForm/>);
+        // const wrapper = mount(<LoginForm />);
         // expect(shallowToJson(wrapper))
         // console.log(wrapper.instance());
         // const form = wrapper.find('form')
-        console.log(wrapper.length)
         expect(wrapper).toHaveLength(1)
         // expect(nav).toHaveLength(1)
         // console.log(form.props())
@@ -41,46 +39,49 @@ describe('Login Component', ()=>{
 
 
     });
+  
     it('check it changes state on input change', ()=>{
-        let username = wrapper.find('input[name="username"]')
+        const loginComponent = wrapper.find(LoginForm).dive()
+        let username = loginComponent.find('input[name="username"]')
         username.simulate('change', {target: {name: "username",value: 'Mary'}});
-        // wrapper.find('form')
-        let password = wrapper.find('input[name="password"]')
+        let password = loginComponent.find('input[name="password"]')
         password.simulate('change', {target: {name: "password",value: 'mango'}});
-        // console.log(username.instance())
-        console.log(wrapper.state())
-        // console.log( wrapper.find('form').props())
-        expect(wrapper.state('username')).toBe('Mary');  
-        expect(wrapper.state('password')).toBe('mango');  
+        expect(loginComponent.state('username')).toBe('Mary');  
+        expect(loginComponent.state('password')).toBe('mango');
+
     });
 
-    it('It handles submit', async ()=>{
-       
-        let catchFn = jest.fn(),
-            thenFn = jest.fn();
-        let username = wrapper.find('input[name="username"]')
-        username.simulate('change', {target: {name: "username",value: 'Mary'}});
-        let password = wrapper.find('input[name="password"]')
-        password.simulate('change', {target: {name: "password",value: 'mango'}});
-        mockAxios.post.mockImplementationOnce(() =>
-            Promise.resolve({
-            data: { Message: "User has been added successfully", Status: "Success" , Token: "usertoken"}
-            })
-            
-        );
-        const form = wrapper.find('form')
-        await form.simulate('submit')
-        expect(wrapper.pre)
-        expect(wrapper.state().is_authenticated).toBe(true)
-        // expect(thenFn).toHaveBeenCalledWith();
-         
-        //     // catch should not have been called
-        // expect(catchFn).not.toHaveBeenCalled(1);
+    it('Submits the login form', async ()=>{
 
-       
+       await mock.onPost('http://localhost:5000/api/v2/login').reply(201,
+         {
+            Token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI",
+            Message: "You have successfully logged in",
+            Status: "Success",
+            User: {
+              username: "brian",
+              email: "brian.kasigazi@andela.com",
+              first_name: "Kasigazi",
+              last_name: "Brian",
+              gender: "male"
+            }
+          })
+           const loginComponent = wrapper.find(LoginForm).dive()
+           let username = loginComponent.find('input[name="username"]')
+           username.simulate('change', {target: {name: "username",value: 'Mary'}});
+           let password = loginComponent.find('input[name="password"]')
+           password.simulate('change', {target: {name: "password",value: 'mango'}});
+           const form = loginComponent.find('form')
+           form.simulate('submit', {preventDefault: ()=>{}})
+           expect(loginComponent.state("isAuthenticated")).toBe(false)
+          
+
     })
-      
-   
-        
+    it("has the heading", ()=>{
+        const loginComponent = wrapper.find(LoginForm).dive()
+        expect(loginComponent.find('h1.my-h1').text()).toContain("Please Sign in")
 
+    })
+   
+   
 });

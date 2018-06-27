@@ -126,3 +126,14 @@ describe('Login Component', ()=>{
   
 
 });
+{
+            Token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI",
+            Message: "You have successfully logged in",
+            Status: "Success",
+            User: {
+              username: "brian",
+              email: "brian.kasigazi@andela.com",
+              first_name: "Kasigazi",
+              last_name: "Brian",
+              gender: "male"
+            }

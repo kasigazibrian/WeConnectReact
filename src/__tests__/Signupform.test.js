@@ -1,97 +1,90 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { shallowToJson } from 'enzyme-to-json'
-import SignupForm from "../SignupForm";
-import mockAxios from '../__mocks__/axios';
-
+import SignupForm from "../components/user/SignupForm";
+// import mockAxios from '../__mocks__/axios';
+import MockAdapter from 'axios-mock-adapter';
+import axios from "axios";
+import { MemoryRouter }    from 'react-router-dom';
 
 describe('Signup Component', ()=>{
 
-    const wrapper = mount(<SignupForm/>);
+    const wrapper = shallow(<MemoryRouter><SignupForm/></MemoryRouter>);
+    const mock = new MockAdapter(axios);
+
+    mock.onPost(`http://localhost:5000/api/v2/auth/register`).reply(201,
+         {
+            Message: "User Mary has been registered successfully",
+            Status: "Success"
+          })
     
-    
-   
-    // // let mockAdapter = new MockAdapter(axios);
     it("Test it renders correctly", ()=>{
-        // let spy = jest.spyOn(LoginForm.prototype, "handleSubmit");
-        // console.log(LoginForm.prototype);
-        // expect(shallowToJson(wrapper))
-        // console.log(wrapper.instance());
-        // const form = wrapper.find('form')
-        console.log(wrapper.length)
-        expect(wrapper).toHaveLength(1)
-        // expect(nav).toHaveLength(1)
-        // console.log(form.props())
-        // let username = form.find("input[name='username']");
-        // console.log(username.props())
-        // console.log(form);
-        // username.instance().value = "brian";
-        // console.log(username.instance().value)
-        // console.log(username.instance().value)
-        // form.simulate("submit")
-        // console.log(wrapper.proptype)
-        // expect(spy).toHaveBeenCalled()
+        expect(wrapper.find(SignupForm)).toHaveLength(1)
 
 
     });
+
     it('Should have a heading',()=>{
-        expect(wrapper.find('h1.my-h1').text()).toContain("Please Sign up")
+        const signUpComponent = wrapper.find(SignupForm).dive()
+        expect(signUpComponent.find('h1.my-h1').text()).toContain("Please Sign up")
     })
      
-    it('Should have a heading',()=>{
-        expect(wrapper.find('button.btn').value()).toContain("Signup")
+    it('Should have a sign up button',()=>{
+        const signUpComponent = wrapper.find(SignupForm).dive()
+        expect(signUpComponent.find('button.btn').text()).toContain("Sign up")
     })
+    // it('Wrong confirm password', ()=>{
+    //     const form = wrapper.find('form')
+    //     form.simulate('submit')
+    // })
 
     it('check it changes state on input change', ()=>{
-        let username = wrapper.find('input[name="username"]')
+        const signUpComponent = mount(<SignupForm/>)
+        let username = signUpComponent.find('input[name="username"]')
         username.simulate('change', {target: {name: "username",value: 'mary'}});
         // wrapper.find('form')
-        let password = wrapper.find('input[name="password"]')
+        let password = signUpComponent.find('input[name="password"]')
         password.simulate('change', {target: {name: "password",value: 'mango'}});
-        // console.log(username.instance())
-        let first_name = wrapper.find('input[name="first_name"]')
+        let first_name = signUpComponent.find('input[name="first_name"]')
         first_name.simulate('change', {target: {name: "first_name",value: 'Mary'}});
 
-        let last_name = wrapper.find('input[name="last_name"]')
+        let last_name = signUpComponent.find('input[name="last_name"]')
         last_name.simulate('change', {target: {name: "last_name",value: 'Lucy'}});
-        let email = wrapper.find('input[name="last_name"]')
+        let email = signUpComponent.find('input[name="last_name"]')
         email.simulate('change', {target: {name: "email",value: 'mary@gmail.com'}});
        
-        console.log(wrapper.state())
         // console.log( wrapper.find('form').props())
-        expect(wrapper.state('username')).toBe('mary');  
-        expect(wrapper.state('password')).toBe('mango');
-        expect(wrapper.state('first_name')).toBe('Mary');
-        expect(wrapper.state('last_name')).toBe('Lucy');
+        expect(signUpComponent.state('username')).toBe('mary');  
+        expect(signUpComponent.state('password')).toBe('mango');
+        expect(signUpComponent.state('first_name')).toBe('Mary');
+        expect(signUpComponent.state('last_name')).toBe('Lucy');
     });
 
-    // it('It handles submit', async ()=>{
-       
-    //     let catchFn = jest.fn(),
-    //         thenFn = jest.fn();
-    //     let username = wrapper.find('input[name="username"]')
-    //     username.simulate('change', {target: {name: "username",value: 'Mary'}});
-    //     let password = wrapper.find('input[name="password"]')
-    //     password.simulate('change', {target: {name: "password",value: 'mango'}});
-    //     mockAxios.post.mockImplementationOnce(() =>
-    //         Promise.resolve({
-    //         data: { Message: "User has been added successfully", Status: "Success"}
-    //         })
-            
-    //     );
-    //     const form = wrapper.find('form')
-    //     await form.simulate('submit')
-    //     // expect(wrapper.pre)
-    //     expect(wrapper.state().is_authenticated).toBe(true)
-    //     // expect(thenFn).toHaveBeenCalledWith();
-         
-    //     //     // catch should not have been called
-    //     // expect(catchFn).not.toHaveBeenCalled(1);
+    it('It handles submit', async ()=>{
+        const signUpComponent = wrapper.find(SignupForm).dive()
+        let confirmPassword = signUpComponent.find('input[name="confirmPassword"]')
+        confirmPassword.simulate('change', {target: {name: "confirmPassword",value: 'mango'}});
 
-       
-    // })
-      
-   
+        let password = signUpComponent.find('#password-input')
+        password.simulate('change', {target: {name: "password",value: 'mango'}});
+        const form = signUpComponent.find('form')
         
+        await form.simulate('submit',  { preventDefault: ()=>{}})
+        
+    });
+   
+
+    it('It checks the password strength',() =>{
+        const signUpComponent = mount(<SignupForm/>)
+        let password = signUpComponent.find('input[name="password"]')
+        password.simulate('change', {target: {name: "password",value: 'mango'}});
+        expect(signUpComponent.state('score')).toBe(1);
+        expect(signUpComponent.state('suggestions')).toContain('Add another word or two. Uncommon words are better.');
+        password.simulate('change', {target: {name: "password",value: 'mango1231321AA'}});
+        expect(signUpComponent.state('score')).toBe(4);
+
+    })
+   
+           
 
 });
