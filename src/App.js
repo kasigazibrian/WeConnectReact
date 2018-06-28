@@ -6,12 +6,11 @@ import HomeCarousel from "./components/home/Carousel";
 import SearchPage from "./components/business/searchpage";
 import SignupForm from "./components/user/SignupForm";
 import BusinessRegistration from "./components/business/RegisterBusiness";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route} from "react-router-dom";
 import { ToastContainer } from 'react-toastify'
 
 import LogOut from "./components/user/Logout";
 import EditBusiness from "./components/business/Editbusiness";
-import DeleteBusiness from './components/business/DeleteBusiness'
 import SearchResults from "./components/business/SearchResults";
 import UserProfile from "./components/user/UserProfile"
 
@@ -58,7 +57,6 @@ unsetAuth = ()=>{
                   <Route exact strict path="/businesses/:business_id" component={BusinessProfile}/>
                   <Route exact strict path="/search_results" component={SearchResults}/>
                   <Route exact strict path="/edit_business/:business_id" component={()=><EditBusiness getAuth={this.getAuth}/>}/>
-                  <Route strict path="/delete_business/:business_id" component={()=><DeleteBusiness getAuth={this.getAuth}/>}/>
               </div>
           </Router>
       );
