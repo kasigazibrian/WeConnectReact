@@ -37,11 +37,6 @@ class HomeCarousel extends Component {
 			super(props);
 			this.state = { activeIndex: 0,
 			isAuthenticated: this.props.getAuth()};
-			this.next = this.next.bind(this);
-			this.previous = this.previous.bind(this);
-			this.goToIndex = this.goToIndex.bind(this);
-			this.onExiting = this.onExiting.bind(this);
-			this.onExited = this.onExited.bind(this);
 	}
 
 	onExiting = () => {
@@ -58,17 +53,17 @@ class HomeCarousel extends Component {
 			this.setState({ activeIndex: nextIndex });
 	}
 
-	previous() {
+	previous = ()=> {
 			if (this.animating) return;
 			const nextIndex = this.state.activeIndex === 0 ? items.length - 1 : this.state.activeIndex - 1;
 			this.setState({ activeIndex: nextIndex });
 	}
 
-	goToIndex(newIndex) {
+	goToIndex = (newIndex) => {
 			if (this.animating) return;
 			this.setState({ activeIndex: newIndex });
 	}
-	componentWillMount(){
+	componentWillMount = ()=>{
 			if (localStorage.getItem('token') === null){
 					this.setState({isAuthenticated: false})
 			}
@@ -83,12 +78,9 @@ class HomeCarousel extends Component {
 				<CarouselItem
 						onExiting={this.onExiting}
 						onExited={this.onExited}
-						key={item.src}
-
-				>
+						key={item.src}>
 						<img src={item.src} alt={item.altText} />
 						<CarouselCaption captionText={item.caption} captionHeader={item.caption} />
-
 				</CarouselItem>
 
 			);
@@ -106,7 +98,6 @@ class HomeCarousel extends Component {
 								next={this.next}
 								previous={this.previous}
 						>
-
 								<CarouselIndicators items={items} activeIndex={activeIndex} onClickHandler={this.goToIndex} />
 								{slides}
 								<CarouselControl direction="prev" directionText="Previous" onClickHandler={this.previous} />

@@ -1,10 +1,8 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import axios from 'axios'
-import { expect } from 'chai';
 import MockAdapter from 'axios-mock-adapter';
 import LogOut from '../components/user/Logout';
-import TestRenderer from 'react-test-renderer';
 import { MemoryRouter }    from 'react-router-dom';
 import NavigationBar from '../components/home/NavigationBar';
 
@@ -17,25 +15,60 @@ window.localStorage = {
 
 describe('Logout Component',  ()=>{
     const mock = new MockAdapter(axios);
-    const wrapper = mount(<MemoryRouter initialEntries={['/logout']}><LogOut/></MemoryRouter>);
-    
     mock.onPost('http://localhost:5000/api/v2/auth/logout').reply(201,
-        {
-             Message: "You have successfully logged out",
-             Status: "Success"
-        })
-    let spy = jest.spyOn(axios, 'post');
-    
-    it('Logs out a user ', ()=>{
-        const logOutComponent = wrapper.find(LogOut)
-        // expect(localStorage.getItem).to.be.called.with('token')
+    {
+         Message: "You have successfully logged out",
+         Status: "Success"
     })
+
+    
     it("Test it renders correctly", ()=>{
-        expect(wrapper.find(LogOut)).to.have.length(1)
-        expect(wrapper.find(NavigationBar)).to.have.length(1)
+        const wrapper = mount(<LogOut/>);
+        expect(wrapper.find(LogOut)).toHaveLength(1)
+        expect(wrapper.find(NavigationBar)).toHaveLength(1)
 
 
     });
+
+    it("Should catch invalid request response", ()=>{
+        mock.onPost('http://localhost:5000/api/v2/auth/logout').reply(401,
+        {
+             Message: "Your session has expired. Please login again",
+             Status: "Fail"
+        })
+        const wrapper = mount(<LogOut/>);
+        let spyComponentDidMount= jest.spyOn(wrapper.instance(), 'componentDidMount')
+        wrapper.instance().componentDidMount()
+        expect(spyComponentDidMount).toHaveBeenCalled()
+
+    })
+    it("Should handle network error", ()=>{
+        mock.onPost('http://localhost:5000/api/v2/auth/logout').networkError()
+        const wrapper = mount(<LogOut/>);
+        let spyComponentDidMount= jest.spyOn(wrapper.instance(), 'componentDidMount')
+        wrapper.instance().componentDidMount()
+        expect(spyComponentDidMount).toHaveBeenCalled()
+
+    })
+    it("should set state to true if no token is found", ()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{ return null},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+          
+      }
+        const wrapper = mount(<LogOut history={{push: (route)=>{}}}/>);
+    })
+    it("Should redirect when a user successfully logs out ", async ()=>{
+        const wrapper = mount(<LogOut history={{push: (route)=>{}}}/>)
+        let spyLogOut = jest.spyOn(wrapper.instance(), 'componentDidMount')
+        let spyPush = jest.spyOn(wrapper.props().history, 'push')
+        wrapper.setState({hasLoggedOut: true})
+        await wrapper.instance().componentDidMount()
+        expect(spyLogOut).toHaveBeenCalled()
+        expect(spyPush).toHaveBeenCalled()
+    })
 
    
     

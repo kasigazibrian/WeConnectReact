@@ -11,12 +11,11 @@ import NavigationBar from "../home/NavigationBar";
 import axios from 'axios'
 import {toast} from "react-toastify";
 import { Redirect } from 'react-router-dom'
+import logo from '../../images/logo.png';
 
 export default class SearchPage extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.toggle = this.toggle.bind(this);
 		this.state = {
 			isOpen: false,
 			isAuthenticated: this.props.getAuth(),
@@ -28,7 +27,7 @@ export default class SearchPage extends React.Component {
 		};
 	}
 
-	componentWillMount(){
+	componentWillMount = ()=>{
 		if (localStorage.getItem('token') === null){
 			this.setState({isAuthenticated: false})
 		}
@@ -37,7 +36,6 @@ export default class SearchPage extends React.Component {
 
 	handleSearchInputChange = event =>{
 		this.setState({[event.target.name]: event.target.value})
-		console.log(this.state);
 	};
 	handleSubmit = event =>{
 		const { business_name, category, location} = this.state;
@@ -61,7 +59,7 @@ export default class SearchPage extends React.Component {
 			});
 
 	};
-	toggle() {
+	toggle = ()=> {
 		this.setState({
 			isOpen: !this.state.isOpen
 		});
@@ -87,7 +85,7 @@ export default class SearchPage extends React.Component {
 							<div className="my-logo"></div>
 								<form onSubmit={this.handleSubmit}>
 									<Navbar color="dark" light expand="md">
-										<NavbarBrand href="/search" className="text-light"><img src="./logo.png" alt="We Connect!" height="45px" width="42px" />Search for Businesses</NavbarBrand>
+										<NavbarBrand href="/search" className="text-light"><img src={logo} alt="We Connect!" height="45px" width="42px" />Search for Businesses</NavbarBrand>
 										<NavbarToggler onClick={this.toggle} />
 										<Collapse isOpen={this.state.isOpen} navbar>
 											<Nav className="ml-auto" navbar>

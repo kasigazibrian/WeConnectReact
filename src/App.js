@@ -45,7 +45,7 @@ unsetAuth = ()=>{
           <Router>
               <div>
                   <Route exact strict path="/register" component={()=> <BusinessRegistration getAuth={this.getAuth()}/>}/>
-                  <Route exact strict path="/logout" component={()=><LogOut getAuth={this.getAuth}/>}/>
+                  <Route exact strict path="/logout" render={(props)=><LogOut {...props} getAuth={this.getAuth}/>}/>
                   <Route exact strict path='/businesses' component={BusinessCatalog}/>
                   <Route exact strict path='/search' component={()=><SearchPage getAuth={this.getAuth}/>}/>
                   <Route exact strict path="/" component={() => <HomeCarousel getAuth={this.getAuth}/> } />
@@ -54,7 +54,7 @@ unsetAuth = ()=>{
                                                                                 getAuth={this.getAuth}/>} />
                   <Route exact strict path="/signup" component={()=> <SignupForm getAuth={this.getAuth}/>} />
                   <Route exact path="/authuser/userprofile" component={()=> <UserProfile getAuth={this.getAuth}/>} />
-                  <Route exact strict path="/businesses/:business_id" component={BusinessProfile}/>
+                  <Route exact strict path="/businesses/:business_id" render={(props)=><BusinessProfile {...props}/>}/>
                   <Route exact strict path="/search_results" component={SearchResults}/>
                   <Route exact strict path="/edit_business/:business_id" component={()=><EditBusiness getAuth={this.getAuth}/>}/>
               </div>

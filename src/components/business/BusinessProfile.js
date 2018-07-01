@@ -8,7 +8,7 @@ import { toast } from "react-toastify"
 import Trash from 'react-icons/lib/fa/trash';
 import Edit from 'react-icons/lib/fa/edit';
 
-export default class BusinessRegistration extends React.Component{
+class BusinessProfile extends React.Component{
   constructor(props) {
 		super(props);
 		this.state = {
@@ -16,38 +16,40 @@ export default class BusinessRegistration extends React.Component{
 			modal: false,
 			review: '',
 			disabled: false,
+			deletedSuccessfully: false,
+			businessId: this.props.match.params.business_id,
 			business: {},
 			reviews: [{review: "None"}]
 		}
 	}
-componentWillMount(){
-  if (localStorage.getItem('token') === null){
-		this.setState({isAuthenticated: false});
-
+	componentWillMount = ()=>{
+		if (localStorage.getItem('token') === null){
+			this.setState({isAuthenticated: false});
+		
+	
+			}
+		else( this.setState({isAuthenticated: true}) )
 		}
-	else( this.setState({isAuthenticated: true}) )
-	}
 
-componentDidMount(){
-	const  id  = this.props.match.params.business_id;
-		axios.get(`http://localhost:5000/api/v2/businesses/${id}`)
+
+componentDidMount = ()=>{
+		axios.get(`http://localhost:5000/api/v2/businesses/${this.state.businessId}`)
 			.then(response=> {
-					console.log(response.data);
 					this.setState({business: response.data.Businesses[0]
 			})
 		})
 			.catch(error =>{
-				toast.error("Business with id "+id +" not found", {position: toast.POSITION.BOTTOM_CENTER})
+				toast.error("Business with id "+ this.state.businessId +" not found", {position: toast.POSITION.BOTTOM_CENTER})
 
 			});
-		axios.get(`http://localhost:5000/api/v2/businesses/${id}/reviews`)
+		axios.get(`http://localhost:5000/api/v2/businesses/${this.state.businessId}/reviews`)
 			.then(response =>{
-					console.log(response.data['Business Reviews']);
 					this.setState({reviews: response.data["Business Reviews"]})
 			})
 			.catch(error => {
 				if(error.response !== undefined){
-					toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
+					// console.log(error.response)
+					toast.info("No business reviews found",{position: toast.POSITION.BOTTOM_CENTER});
 				}
 				else{
 					toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
@@ -63,7 +65,6 @@ componentDidMount(){
 	
 
   handleReviewChange = (e) =>{
-		console.log(e.target.getContent())
 		this.setState({review: e.target.getContent()});
 		};
 
@@ -75,9 +76,8 @@ componentDidMount(){
 	}
 
 	handleDelete = (e)=>{
-		console.log('am here')
 		e.preventDefault();
-		const id = this.state.business.business_id;
+		const id = this.state.businessId;
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
 			axios.delete(`http://localhost:5000/api/v2/businesses/${id}`, {
 					headers: {'Content-Type':'application/json'}
@@ -86,7 +86,7 @@ componentDidMount(){
 						if (response.data.Status === "Success")
 						{
 								toast.success(response.data.Message,{position: toast.POSITION.TOP_CENTER});
-								this.setState({modal: !this.state.modal})
+								this.setState({modal: !this.state.modal, deletedSuccessfully: true})
 
 						}
 						else{
@@ -110,16 +110,13 @@ componentDidMount(){
 		e.preventDefault();
 
 		const review = {review: this.state.review};
-		console.log(this.state.review);
-		axios.post(`http://localhost:5000/api/v2/businesses/${this.state.business.business_id}/reviews`, JSON.stringify(review),
+		axios.post(`http://localhost:5000/api/v2/businesses/${this.state.businessId}/reviews`, JSON.stringify(review),
 		{
 				headers: {'Content-Type':'application/json'}
 		})
 		.then(res => {
-				console.log(res)
 				if (res.data.Status === "Success") {
 						toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
-						this.setState({isAuthenticated: true});
 
 				}
 				else{
@@ -128,6 +125,7 @@ componentDidMount(){
     })
 		.catch(error => {
 			if(error.response !== undefined){
+				console.log(error.response)
 				toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
 			}
 			else{
@@ -138,14 +136,20 @@ componentDidMount(){
 }
 
 render(){
+	const {reviews, business } =  this.state;
 	if(this.state.isAuthenticated === false){
 		toast.error("Please login to view this page", {position: toast.POSITION.BOTTOM_CENTER});
 		return (<Redirect to={{
 			pathname: '/login'
 		}} />);
 	}
-	const {reviews, business } =  this.state;
-	// console.log(business.business_owner_id)
+	if(this.state.deletedSuccessfully === true){
+		return (<Redirect push=
+			{true} to={{
+			pathname: '/businesses'
+		}} />);
+	}
+
 	let addReviewPermission = this.handleAddReviewPermissions(business.business_owner_id)
 	let createEditPermission = this.handleCreateEditPermissions(business.business_owner_id)
 	function createMarkup(review){
@@ -160,44 +164,45 @@ render(){
 	return(
 			<div>
 					<NavigationBar auth={this.state.isAuthenticated}/>
-					<Container >
+					<div className="background-profile-image">
+					<Container style={{color: "white"}}>
 						<Row>
-							<Col xs="6">
+							<Col xs="6" className="bg-secondary">
 										<div className="content-left">
-											<FormGroup  >
-												<h1 style={{fontSize: "40px"}}>Business Profile </h1>
+											<FormGroup >
+												<h1 id="profile-heading" style={{fontSize: "40px"}}>Business Profile </h1>
 													<div className={createEditPermission} >
 														<Button tag={"a"} className="btn-info" href={`/edit_business/${this.state.business.business_id}`}><Edit/></Button> 
 														<Button style={{marginLeft: "5px"}} onClick={this.toggle} className="btn-danger"> <Trash/></Button>
 												</div>
 											</FormGroup> 
 											<FormGroup >
-												<b><label id="user" className="my-label-fontcolor">Business Name:</label></b><br/>
+												<b><label id="businessName" >Business Name:</label></b><br/>
 												<Label className="profile-labels">{this.state.business.business_name}</Label>
 											</FormGroup>
 											<FormGroup >
-												<b><label id="user" className="my-label-fontcolor"  >Business Location:</label></b><br/>
+												<b><label id="businessLocation"  >Business Location:</label></b><br/>
 												<Label className="profile-labels"> {this.state.business.business_location}</Label>
 											</FormGroup>
 											<FormGroup >
-												<b><label id="user" className="my-label-fontcolor">Business Email:</label></b><br/>
+												<b><label id="businessEmail" >Business Email:</label></b><br/>
 												<Label className="profile-labels">{this.state.business.business_email}</Label>
 											</FormGroup>
 											<FormGroup >
-												<b><label className="my-label-fontcolor">Contact Number:</label></b><br/>
+												<b><label >Contact Number:</label></b><br/>
 												<Label className="profile-labels">{this.state.business.contact_number}</Label>
 											</FormGroup>
 											<FormGroup >
-												<b><label className="my-label-fontcolor"  >Business Description:</label></b><br/>
+												<b><label   >Business Description:</label></b><br/>
 												<Label className="profile-labels"> {this.state.business.business_description}</Label>
 											</FormGroup>
 											<FormGroup>
-												<b><Label for="business_category">Business Category:</Label></b><br/>
+												<b><Label >Business Category:</Label></b><br/>
 												<Label className="profile-labels">{this.state.business.business_category}</Label>
 											</FormGroup>
 								 </div>
 								</Col>
-							<Col xs="6">
+							<Col xs="6" className="bg-secondary">
 								<Container>
 									<div className="content-right">
 										<form onSubmit={this.handleSubmit}>
@@ -232,22 +237,21 @@ render(){
 						</Row>
 					</Container>
 					<div>
-						<form onSubmit={this.handleDelete}>
 							<Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
 								<ModalHeader toggle={this.toggle}>Delete Business</ModalHeader>
 								<ModalBody>
 									Are you sure you want to delete {this.state.business.business_name}?
 								</ModalBody>
 								<ModalFooter>
-									<Button color="danger" type="submit">Delete business</Button>
+									<Button id="delete_business" onClick={this.handleDelete} color="danger">Delete business</Button>
 									<Button color="secondary" onClick={this.toggle}>Cancel</Button>
 								</ModalFooter>
 							</Modal>
-							</form>
+					</div>
 					</div>
 			</div>
 	);
 }
 }
-
+export default BusinessProfile
 

@@ -5,28 +5,33 @@ import EditBusiness from "../components/business/Editbusiness";
 // import mockAxios from '../__mocks__/axios';
 import MockAdapter from 'axios-mock-adapter';
 import axios from "axios";
-
-import { MemoryRouter }    from 'react-router-dom';
+import ReactRouterEnzymeContext from 'react-router-enzyme-context';
+import { MemoryRouter, StaticRouter }    from 'react-router-dom';
 
 
 global.getAuth = ()=>{
     return false
 }
+global.match = {path: '/', url: "/edit_business/:business_id", params: {business_id: 1}, isExact: true }
 let store = {};
 window.localStorage = {
     getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
     setItem: (key, value)=> { store[key] = value},
     removeItem: key => Reflect.deleteProperty(store, key)
 }
-describe('Signup Component', ()=>{
-
-    const wrapper = mount(<MemoryRouter  match={{params: { business_id: 1} } }><EditBusiness getAuth={getAuth} match={{params: { business_id: 1} } }/></MemoryRouter>);
+describe('Edit Business Component', ()=>{
+    const wrapper = mount(<MemoryRouter initialEntries={['/edit_business/:business_id']}><EditBusiness match={match}/></MemoryRouter>);
     const mock = new MockAdapter(axios);
 
     mock.onPut(`http://localhost:5000/api/v2/businesses/1`).reply(201,
         {
             Message: "Business has been updated successfully",
             Status: "Success"
+        })
+        mock.onPut(`http://localhost:5000/api/v2/businesses/undefined`).reply(400,
+        {
+            Message: "Business with this ID not found",
+            Status: "Fail"
         })
         mock.onGet(`http://localhost:5000/api/v2/businesses/1`).reply(200,
              {
@@ -61,66 +66,89 @@ describe('Signup Component', ()=>{
                 "Status": "Success"
               
         })
-    // it('it matches snapshot', () => {
-    //     expect(wrapper.find(EditBusiness)).toMatchSnapshot();
-    // })
+    it('it matches snapshot', () => {
+        const wrapper = shallow(<EditBusiness/>)
+        expect(wrapper.find(EditBusiness)).toMatchSnapshot();
+    })
     
     it("Test it renders correctly", ()=>{
         expect(wrapper).toHaveLength(1)
-        const item = wrapper.find(EditBusiness)
+        const component = wrapper.find(EditBusiness)
+        expect(component).toHaveLength(1)
 
     });
 
     it('Should have a heading',()=>{
-        expect(wrapper.find('h1#heading').text()).toContain("Edit Business")
+        const component = wrapper.find(EditBusiness)
+        expect(component.find('h1#heading').text()).toContain("Edit Business")
     })
      
     it('Should have a register button',()=>{
         expect(wrapper.find('button.btn').text()).toContain("Save Changes")
     })
    
-    it('check it changes state on input change', ()=> {
-        let businessName = wrapper.find('input[name="business_name"]')
-        businessName.simulate('change', {target: {name: "business_name",value: 'Supercom Limited'}});
+    it('check it changes state and value on input change', ()=> {
+        const component = wrapper.find(EditBusiness)
+        let businessName = component.find('input[name="businessName"]')
+        businessName.simulate('change', {target: {name: "businessName",value: 'Supercom Limited'}});
         
         // wrapper.find('form')
-        let businessLocation = wrapper.find('input[name="business_location"]')
-        businessLocation.simulate('change', {target: {name: "business_location",value: 'Kampala'}});
+        let businessLocation = component.find('input[name="businessLocation"]')
+        businessLocation.simulate('change', {target: {name: "businessLocation",value: 'Kampala'}});
 
-        let businessEmail = wrapper.find('input[name="business_email"]')
-        businessEmail.simulate('change', {target: {name: "business_email",value: 'supercom@gmail.com'}});
+        let businessEmail = component.find('input[name="businessEmail"]')
+        businessEmail.simulate('change', {target: {name: "businessEmail",value: 'supercom@gmail.com'}});
        
-        let contactNumber = wrapper.find('input[name="contact_number"]')
-        contactNumber.simulate('change', {target: {name: "contact_number",value: '256781712927'}});
+        let contactNumber = component.find('input[name="contactNumber"]')
+        contactNumber.simulate('change', {target: {name: "contactNumber",value: '256781712927'}});
 
-        let businessDescription = wrapper.find('textarea[name="business_description"]')
-        businessDescription.simulate('change', {target: {name: "business_description", value: 'This business provides the best services'}});
+        let businessDescription = component.find('textarea[name="businessDescription"]')
+        businessDescription.simulate('change', {target: {name: "businessDescription", value: 'This business provides the best services'}});
+
        
         let businessCategory = wrapper.find('select[name="businessCategory"]')
-        businessCategory.simulate('change', {target: {name: "business_category", value: 'Entertainment'}});
-        // console.log(wrapper.state())
-        // expect(wrapper.state('business_name')).toBe('Supercom Limited');  
-        // expect(wrapper.state('business_location')).toBe('Kampala');
-        // expect(wrapper.state('business_email')).toBe('supercom@gmail.com');
-        // expect(wrapper.state('contact_number')).toBe('256781712927');
-        // expect(wrapper.state('business_description')).toBe('This business provides the best services');
-        // expect(wrapper.state('business_category')).toBe('Entertainment');
+        businessCategory.simulate('change', {target: {name: "businessCategory", value: 'Entertainment'}});
+       
+        expect(businessName.instance().value).toBe('Supercom Limited');  
+        expect(businessLocation.instance().value).toBe('Kampala');
+        expect(businessEmail.instance().value).toBe('supercom@gmail.com');
+        expect(contactNumber.instance().value).toBe('256781712927');
+        expect(businessDescription.instance().value).toBe('This business provides the best services');
+        expect(businessCategory.instance().value).toBe('Entertainment');
     });
 
-    it('It handles submit', async ()=>{
+    it('It handles errors on submit', async ()=>{
+        const component = wrapper.find(EditBusiness)
         let store = {};
         window.localStorage = {
                 getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
                 setItem: (key, value)=> { store[key] = value},
                 removeItem: key => Reflect.deleteProperty(store, key)
         }
-        let businessName = wrapper.find('input[name="business_name"]')
-        businessName.simulate('change', {target: {name: "business_name",value: 'Supercom Limited'}});
+        let businessName = component.find('input[name="businessName"]')
+        businessName.simulate('change', {target: {name: "businessName",value: 'Supercom Limited'}});
         // wrapper.find('form')
         
         const form = wrapper.find('form')
         await form.simulate('submit',  { preventDefault: ()=>{}})
         
     });
+    it('It handles submit', async ()=>{
+        const component = shallow(<MemoryRouter><EditBusiness/></MemoryRouter>)
+        const EditBusinessComponent = component.find(EditBusiness).dive()
+        // console.log(EditBusinessComponent.props())
+        let store = {};
+        window.localStorage = {
+                getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+                setItem: (key, value)=> { store[key] = value},
+                removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        let businessName = EditBusinessComponent.find('input[name="businessName"]')
+        // businessName.simulate('change', {target: {name: "businessName",value: 'Supercom Limited'}});
+        const form = wrapper.find('form')
+        await form.simulate('submit',  { preventDefault: ()=>{}})
+        
+    });
+   
    
 });

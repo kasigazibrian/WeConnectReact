@@ -3,7 +3,6 @@ import {  Card, CardHeader, CardText, CardBody, Container, Col, Row,
 	CardTitle, CardSubtitle, Button } from 'reactstrap';
 import axios from 'axios';
 import NavigationBar from "../home/NavigationBar";
-import { Link } from "react-router-dom"
 import 'rc-pagination/assets/index.css';
 import Pagination from 'rc-pagination';
 import { toast } from 'react-toastify'
@@ -20,7 +19,7 @@ class BusinessCatalog extends React.Component {
 			perPage: 6
 		}
 	}
-	componentWillMount(){
+	componentWillMount = () =>{
 		if (localStorage.getItem('token') !== null){
 			this.setState({isAuthenticated: true})
 		}
@@ -48,7 +47,7 @@ class BusinessCatalog extends React.Component {
 
 	};
 
-	componentDidMount(){
+	componentDidMount = ()=>{
 		axios.get(`http://localhost:5000/api/v2/businesses?limit=${this.state.perPage}&page=${this.state.activePage}`)
 			.then(response=> {
 				this.setState({
@@ -68,6 +67,8 @@ class BusinessCatalog extends React.Component {
 			});
 
 }
+showTotal = (total)=> `Total ${total} Businesses`;
+
 
 	render(){
 		let businesses = this.state.businesses.map((business, index)=>{
@@ -80,7 +81,7 @@ class BusinessCatalog extends React.Component {
 							<CardTitle></CardTitle>
 							<CardSubtitle>{business.business_category}</CardSubtitle>
 							<CardText>{business.business_description}</CardText>
-							<Link to={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></Link>
+							<a to={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
 						</CardBody>
 					</Card>
 				</Col>
@@ -88,7 +89,7 @@ class BusinessCatalog extends React.Component {
 		})
 
 	   return(
-		   <div>
+		   <div >
 		   <NavigationBar auth={this.state.isAuthenticated}/>
 
 		   <Container fluid>
@@ -97,10 +98,11 @@ class BusinessCatalog extends React.Component {
 						   total={this.state.count}
 						   onChange={this.onChange}
 						   pageSize ={this.state.perPage}
-						   hideOnSinglePage
+							 hideOnSinglePage
+							 showLessItems
 						   style={{ marginTop: "15px"}}
 						   showTitle={false}
-						   showTotal={(total) => `Total ${total} Businesses`}/>
+						   showTotal={this.showTotal}/>
 
 			   <Row>
 				   {businesses}

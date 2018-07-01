@@ -3,26 +3,26 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import NavigationBar from "../home/NavigationBar";
 import {   FormGroup, Container, Col, Input } from 'reactstrap';
-import {Redirect, withRouter } from 'react-router-dom'
+import {Redirect, withRouter} from 'react-router-dom'
 
 class EditBusiness extends React.Component{
 	constructor(props){
 			super(props);
 
 			this.state={
-					isAuthenticated: this.props.getAuth(),
+					businessId: this.props.match.params.business_id,
+					isAuthenticated: false,
 					businessName: "",
 					businessCategory: "",
 					businessLocation: "",
 					businessEmail: "",
 					contactNumber: "",
 					businessDescription: "",
-					businessId: "",
 					updatedSuccessfully: false
 			}
 	}
 
-	componentWillMount() {
+	componentWillMount = () => {
 			if (localStorage.getItem('token') === null) {
 					this.setState({isAuthenticated: false});
 					this.props.history.push('/login');
@@ -31,8 +31,7 @@ class EditBusiness extends React.Component{
 			}
 			else {
 					this.setState({isAuthenticated: true});
-					const id  = this.props.match.params.business_id;
-					axios.get(`http://localhost:5000/api/v2/businesses/${id}`)
+					axios.get(`http://localhost:5000/api/v2/businesses/${this.state.businessId}`)
 							.then(response=> {
 									this.setState({
 											businessName: response.data.Businesses[0].business_name,
@@ -46,6 +45,7 @@ class EditBusiness extends React.Component{
 							})
 							.catch(error =>{
 								if(error.response !== undefined){
+									// console.log(error.response)
 									toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
 								}
 								else{
@@ -57,13 +57,12 @@ class EditBusiness extends React.Component{
 	}
 	handleChange = event => {
 			this.setState({[event.target.name]: event.target.value});
-			console.log(this.state)
 			
 	};
 	
 	handleUpdateSubmit = event => {
-			const id = this.props.match.params.business_id;
 			event.preventDefault();
+			// console.log(this.state.businessId)
 			const business = {
 					business_name: this.state.businessName,
 					business_category: this.state.businessCategory,
@@ -72,9 +71,8 @@ class EditBusiness extends React.Component{
 					contact_number: this.state.contactNumber,
 					business_description: this.state.businessDescription
 			};
-			console.log(business)
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-			axios.put(`http://localhost:5000/api/v2/businesses/${id}`,
+			axios.put(`http://localhost:5000/api/v2/businesses/${this.state.businessId}`,
 					JSON.stringify(business),
 					{headers: {'Content-Type': 'application/json'}
 					})
@@ -84,6 +82,7 @@ class EditBusiness extends React.Component{
 					})
 					.catch(error => {
 						if(error.response !== undefined){
+							// console.log(error.response)
 							toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
 						}
 						else{
@@ -95,7 +94,9 @@ render(){
 
 	if (this.state.updatedSuccessfully){
 			return(
-					<Redirect to={`/businesses/${this.state.businessId}`}/>
+			
+				<Redirect to={`/businesses/${this.state.businessId}`}/>	
+			
 			)
 	}
 
@@ -106,7 +107,7 @@ render(){
 					<form onSubmit={this.handleUpdateSubmit}>
 							<FormGroup>
 									<Col sm={"6"}>
-											<h1 id="heading" style={{fontSize: "28px"}}>Edit Business </h1>
+											<h1 id="heading" style={{fontSize: "28px"}}>Edit Business Details </h1>
 									</Col>
 							</FormGroup>
 							<FormGroup>
@@ -150,7 +151,9 @@ render(){
 													<option value="Education">Education</option>
 													<option value="Automobiles">Automobiles</option>
 													<option value="Health and Medicine">Health and Medicine</option>
-													<option value="Computers & Electronics">Computers & Electronics</option>
+													<option value="Food retail and service">Food retail and service.</option>
+													<option value="Beauty and fragrances.">Beauty and fragrances.</option>
+													<option value="Sports and outdoors.">Sports and outdoors</option>
 											</Input>
 									</Col>
 							</FormGroup>

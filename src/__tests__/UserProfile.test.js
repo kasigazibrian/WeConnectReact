@@ -82,6 +82,89 @@ describe('User Profile Component', ()=>{
         expect(userProfileComponent.state('password')).toBe('mango');
 
     });
+
+    it('Password toggle method to be functional', ()=>{
+        const wrapper = mount(<UserProfile/>)
+        wrapper.instance().togglePasswordResetModal()
+        expect(wrapper.state('modal')).toBe(true)
+
+    })
+
+
+    it('Submits the password reset form', async ()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        let userProfileComponent = mount(<UserProfile/>);
+        userProfileComponent.setState({password: "mango", confirmPassword: "mango"})
+        const form = userProfileComponent.find('form')
+        await userProfileComponent.setState({valid: true},()=>{
+            form.simulate('submit', {preventDefault: ()=>{}})
+            expect(userProfileComponent.state("modal")).toBe(false)
+        })
+        
+          
+
+    })
+    it("has the heading", ()=>{
+        const wrapper = shallow(<UserProfile/>);
+        expect(wrapper.find('h1#userprofile').text()).toContain("User Profile")
+
+    })
+    it("has the warning information", ()=>{
+        const wrapper = shallow(<UserProfile/>);
+        expect(wrapper.find('h1#registered_businesses').text()).toContain("Your Registered Businesses")
+
+    })
+    it("has the businesses heading information", ()=>{
+        const wrapper = shallow(<UserProfile/>);
+        expect(wrapper.find('label#information').text()).toContain("You are trying to reset your password. If you CANCEL, your password will not be changed.")
+
+    })
+
+    
+    it('check it sets auth to false state when no token is provided', ()=>{
+        let store = {};
+        window.localStorage = {
+            getItem: key =>{ return null},
+            setItem: (key, value)=> { store[key] = value},
+            removeItem: key => Reflect.deleteProperty(store, key)
+            
+        }
+        const wrapper = shallow(<UserProfile/>)
+        expect(wrapper.state('isAuthenticated')).toBe(false);  
+        });
+
+    it("Should catch server errors on password reset", ()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        mock.onPost('http://localhost:5000/api/v2/auth/reset-password').networkError()
+        let userProfileComponent = mount(<UserProfile/>);
+        userProfileComponent.setState({password: "mango", confirmPassword: "mango"})
+        const form = userProfileComponent.find('form')
+        userProfileComponent.setState({valid: true},()=>{
+            form.simulate('submit', {preventDefault: ()=>{}})
+            expect(userProfileComponent.state("modal")).toBe(false)
+        })
+    })
+
+    it('It should catch any server errors on page load',()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        mock.onGet(`http://localhost:5000/api/v2/auth/register`).networkError()
+        const wrapper = mount(<UserProfile/>)
+    })
     it('check it verifies confirm password', async ()=>{
         let store = {};
         window.localStorage = {
@@ -97,50 +180,16 @@ describe('User Profile Component', ()=>{
         expect(userProfileComponent.state('confirmPassword')).toBe('');  
         expect(userProfileComponent.state('password')).toBe('mango');
         expect(userProfileComponent.state('valid')).toBe(false)
-        // expect(userProfileComponent.state('invalid')).toBe(true)
-
     });
 
-
-    it('Submits the password reset form', async ()=>{
-        let store = {};
-        window.localStorage = {
-        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
-        setItem: (key, value)=> { store[key] = value},
-        removeItem: key => Reflect.deleteProperty(store, key)
-        }
-        const wrapper = shallow(<MemoryRouter><UserProfile/></MemoryRouter>);
-        let userProfileComponent = wrapper.find(UserProfile).dive()
-        let password = userProfileComponent.find('#new_password')
-        password.simulate('change', {target: {name: "password",value: 'mango'}})
-        let confirmPassword = userProfileComponent.find('#confirm_password_input')
-        confirmPassword.simulate('change', {target: {name: "confirmPassword", value: 'mango'}});
-        const form = userProfileComponent.find('form')
-        userProfileComponent.setState({valid: true})
-        form.simulate('submit', {preventDefault: ()=>{}})
-        expect(userProfileComponent.state("resetSuccessfully")).toBe(false)
-          
-
+    it('Should confirm passwords match on submit', ()=>{
+            const wrapper = mount(<UserProfile/>)
+            wrapper.setState({password: "mango", confirmPassword: "sdsd"}, ()=>{
+                const form = wrapper.find('form')
+                form.simulate('submit')
+            //    expect(wrapper.instance().toHaveBeenCalled()
+        })
     })
-    it("has the heading", ()=>{
-        const wrapper = shallow(<MemoryRouter><UserProfile/></MemoryRouter>);
-        const userProfileComponent = wrapper.find(UserProfile).dive()
-        expect(userProfileComponent.find('h1#userprofile').text()).toContain("User Profile")
-
-    })
-    it("has the warning information", ()=>{
-        const wrapper = shallow(<MemoryRouter><UserProfile/></MemoryRouter>);
-        const userProfileComponent = wrapper.find(UserProfile).dive()
-        expect(userProfileComponent.find('h1#registered_businesses').text()).toContain("Your Registered Businesses")
-
-    })
-    it("has the businesses heading information", ()=>{
-        const wrapper = shallow(<MemoryRouter><UserProfile/></MemoryRouter>);
-        const userProfileComponent = wrapper.find(UserProfile).dive()
-        expect(userProfileComponent.find('label#information').text()).toContain("You are trying to reset your password. If you CANCEL, your password will not be changed.")
-
-    })
-   
-   
+         
    
 });
