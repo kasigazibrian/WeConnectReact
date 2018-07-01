@@ -6,6 +6,7 @@ import NavigationBar from "../home/NavigationBar";
 import 'rc-pagination/assets/index.css';
 import Pagination from 'rc-pagination';
 import { toast } from 'react-toastify'
+import Config from '../../App.config'
 
 
 class BusinessCatalog extends React.Component {
@@ -26,7 +27,7 @@ class BusinessCatalog extends React.Component {
 		else( this.setState({isAuthenticated: false}) )
 	}
 	onChange = (page, pageSize) => {
-		axios.get(`http://localhost:5000/api/v2/businesses?limit=${pageSize}&page=${page}`)
+		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?limit=${pageSize}&page=${page}`)
 			.then(response=> {
 				this.setState({
 					businesses: response.data.Businesses,
@@ -48,7 +49,7 @@ class BusinessCatalog extends React.Component {
 	};
 
 	componentDidMount = ()=>{
-		axios.get(`http://localhost:5000/api/v2/businesses?limit=${this.state.perPage}&page=${this.state.activePage}`)
+		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?limit=${this.state.perPage}&page=${this.state.activePage}`)
 			.then(response=> {
 				this.setState({
 					businesses: response.data.Businesses,
@@ -81,7 +82,7 @@ showTotal = (total)=> `Total ${total} Businesses`;
 							<CardTitle></CardTitle>
 							<CardSubtitle>{business.business_category}</CardSubtitle>
 							<CardText>{business.business_description}</CardText>
-							<a to={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
+							<a href={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
 						</CardBody>
 					</Card>
 				</Col>

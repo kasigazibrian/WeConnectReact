@@ -1,18 +1,15 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { shallowToJson } from 'enzyme-to-json'
 import BusinessProfile from "../components/business/BusinessProfile";
 import axios from 'axios'
-import  renderer  from 'react-test-renderer'
-import { MemoryRouter, withRouter }    from 'react-router-dom';
-import TinyMCE from 'react-tinymce'
+import { MemoryRouter }    from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
-import NavigationBar from '../components/home/NavigationBar';
+import Config from '../App.config'
 const mock = new MockAdapter(axios)
 global.match = {path: '/', url: "/edit_business/:business_id", params: {business_id: 1}, isExact: true }
 describe('Business Profile Component', ()=>{
     
-    mock.onGet(`http://localhost:5000/api/v2/businesses/2/reviews`).reply(201,
+    mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).reply(201,
     {
       "Business Reviews": [
         {
@@ -34,15 +31,15 @@ describe('Business Profile Component', ()=>{
       Status: "Success"
     }
     )
-    mock.onDelete(`http://localhost:5000/api/v2/businesses/1`).reply(200,{
+    mock.onDelete(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(200,{
     Message: "Business has been deleted successfully",
     Status: "Success"
     })
-    mock.onPost(`http://localhost:5000/api/v2/businesses/1/reviews`).reply(201, {
+    mock.onPost(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).reply(201, {
       Message: "Review has been added successfully",
       Status: "Success"
     })
-    mock.onGet(`http://localhost:5000/api/v2/businesses/2`).reply(200,
+    mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/2`).reply(200,
     {
        page: 1,
        limit: 20,
@@ -139,7 +136,6 @@ describe('Business Profile Component', ()=>{
         
         let form = Component.find('form')
         form.simulate('submit', {preventDefault: ()=>{}})
-      
     })
 
     it('Should return the right permission', ()=>{
@@ -168,19 +164,77 @@ describe('Business Profile Component', ()=>{
       let button = Component.find("#delete_business")
       button.simulate('click',{preventDefault: ()=>{}})
     })
-    // it("has the warning information", ()=>{
-    //   const wrapper = mount(<BusinessProfile match={{params: {business_id: 1}}}/>);
-    //   const Component = wrapper.find(BusinessProfile)
+    it('sets state to false if token is null', ()=>{
+      let store = {};
+      window.localStorage = {
+        getItem: key =>{ return null},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        
+      }
+      const wrapper = shallow(<MemoryRouter><BusinessProfile match={{params: {business_id: 1}}}/></MemoryRouter>)
+      let registerComponent = wrapper.find(BusinessProfile).dive()
+      expect(registerComponent.state('isAuthenticated')).toBe(false);  
+       
+    })
+    it('should handle bad request errors',()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).reply(400,
+        {
+          Message: "No review has been added"
+        })
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).reply(400,{
+         Message: "No business reviews found"
+        })
+        mock.onDelete(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(401,{
+          Message: "Not enough priviledges to delete this business",
+          Status: "Failure"
+          })
+        const wrapper = shallow(<MemoryRouter><BusinessProfile match={{params: {business_id: 1}}}/></MemoryRouter>);
+        const businessProfileComponent = wrapper.find(BusinessProfile).dive()
+        let spyOnHandleSubmit = jest.spyOn(businessProfileComponent.instance(), 'handleDelete') 
+        businessProfileComponent.instance().handleDelete( { preventDefault: ()=>{}})
+        const form = businessProfileComponent.find('form')
+        form.simulate('submit',  { preventDefault: ()=>{}})
+        expect(spyOnHandleSubmit).toHaveBeenCalled()
       
-
-    // })
-//     it("has the businesses heading information", ()=>{
-//         const wrapper = shallow(<MemoryRouter><UserProfile/></MemoryRouter>);
-//         const userProfileComponent = wrapper.find(UserProfile).dive()
-//         expect(userProfileComponent.find('label#information').text()).toContain("You are trying to reset your password. If you CANCEL, your password will not be changed.")
-
-//     })
-   
-   
+    })
+      it('should handle server errors',()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).networkError()
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).networkError()
+        mock.onDelete(`${Config.API_BASE_URL}/api/v2/businesses/1`).networkError()
+        const wrapper = shallow(<MemoryRouter><BusinessProfile match={{params: {business_id: 1}}}/></MemoryRouter>);
+        const businessProfileComponent = wrapper.find(BusinessProfile).dive()
+        let spyOnHandleSubmit = jest.spyOn(businessProfileComponent.instance(), 'handleDelete') 
+        businessProfileComponent.instance().handleDelete( { preventDefault: ()=>{}})
+        const form = businessProfileComponent.find('form')
+        form.simulate('submit',  { preventDefault: ()=>{}})
+        expect(spyOnHandleSubmit).toHaveBeenCalled()
+      
+    })
+    it('should set state with reviews', ()=>{
+      let store = {};
+      window.localStorage = {
+      getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+      setItem: (key, value)=> { store[key] = value},
+      removeItem: key => Reflect.deleteProperty(store, key)
+      }
+      const wrapper = shallow(<MemoryRouter><BusinessProfile match={{params: {business_id: 1}}}/></MemoryRouter>);
+      const businessProfileComponent = wrapper.find(BusinessProfile).dive()
+      let spyOnGetReviews = jest.spyOn(businessProfileComponent.instance(), 'getReviews') 
+      businessProfileComponent.instance().getReviews()
+      expect(spyOnGetReviews).toHaveBeenCalled()
+    })
    
 });

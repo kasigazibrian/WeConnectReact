@@ -1,18 +1,18 @@
 import React from 'react';
-// import "./stylesheet.css";
 import { FormGroup, Label, Container, Col} from 'reactstrap';
 import axios from 'axios';
 import { toast } from 'react-toastify'
 import {  Redirect } from 'react-router-dom'
 import NavigationBar from "../home/NavigationBar";
+import Config from '../../App.config'
 
 export default class LoginForm extends React.Component {
 	constructor(props){
 		super(props);
 		this.state= {
-				username: '',
-				password: '',
-				isAuthenticated: false
+			username: '',
+			password: '',
+			isAuthenticated: false
 		}
 	}
 
@@ -21,7 +21,7 @@ export default class LoginForm extends React.Component {
 
 	};
 	postRequest = (user) =>{
-		axios.post('http://localhost:5000/api/v2/login',
+		axios.post(`${Config.API_BASE_URL}/api/v2/login`,
 		JSON.stringify(user),
 		{
 				headers: {'Content-Type':'application/json'}

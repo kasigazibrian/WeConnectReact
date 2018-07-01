@@ -1,10 +1,10 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter';
 import LogOut from '../components/user/Logout';
-import { MemoryRouter }    from 'react-router-dom';
 import NavigationBar from '../components/home/NavigationBar';
+import Config from '../App.config'
 
 let store = {};
 window.localStorage = {
@@ -15,7 +15,7 @@ window.localStorage = {
 
 describe('Logout Component',  ()=>{
     const mock = new MockAdapter(axios);
-    mock.onPost('http://localhost:5000/api/v2/auth/logout').reply(201,
+    mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/logout`).reply(201,
     {
          Message: "You have successfully logged out",
          Status: "Success"
@@ -31,7 +31,7 @@ describe('Logout Component',  ()=>{
     });
 
     it("Should catch invalid request response", ()=>{
-        mock.onPost('http://localhost:5000/api/v2/auth/logout').reply(401,
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/logout`).reply(401,
         {
              Message: "Your session has expired. Please login again",
              Status: "Fail"
@@ -43,7 +43,7 @@ describe('Logout Component',  ()=>{
 
     })
     it("Should handle network error", ()=>{
-        mock.onPost('http://localhost:5000/api/v2/auth/logout').networkError()
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/logout`).networkError()
         const wrapper = mount(<LogOut/>);
         let spyComponentDidMount= jest.spyOn(wrapper.instance(), 'componentDidMount')
         wrapper.instance().componentDidMount()

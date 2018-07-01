@@ -1,18 +1,17 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { shallowToJson } from 'enzyme-to-json'
 import SignupForm from "../components/user/SignupForm";
-// import mockAxios from '../__mocks__/axios';
 import MockAdapter from 'axios-mock-adapter';
 import axios from "axios";
 import { MemoryRouter }    from 'react-router-dom';
+import Config from '../App.config'
 
 describe('Signup Component', ()=>{
 
     const wrapper = shallow(<MemoryRouter><SignupForm/></MemoryRouter>);
     const mock = new MockAdapter(axios);
 
-    mock.onPost(`http://localhost:5000/api/v2/auth/register`).reply(201,
+    mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/register`).reply(201,
          {
             Message: "User Mary has been registered successfully",
             Status: "Success"
@@ -20,24 +19,16 @@ describe('Signup Component', ()=>{
     
     it("Test it renders correctly", ()=>{
         expect(wrapper.find(SignupForm)).toHaveLength(1)
-
-
     });
 
     it('Should have a heading',()=>{
         const signUpComponent = wrapper.find(SignupForm).dive()
         expect(signUpComponent.find('h1.my-h1').text()).toContain("Please Sign up")
     })
-     
     it('Should have a sign up button',()=>{
         const signUpComponent = wrapper.find(SignupForm).dive()
         expect(signUpComponent.find('button.btn').text()).toContain("Sign up")
     })
-    // it('Wrong confirm password', ()=>{
-    //     const form = wrapper.find('form')
-    //     form.simulate('submit')
-    // })
-
     it('check it changes state on input change', ()=>{
         const signUpComponent = mount(<SignupForm/>)
         let username = signUpComponent.find('input[name="username"]')
@@ -86,8 +77,32 @@ describe('Signup Component', ()=>{
         expect(signUpComponent.state('score')).toBe(2);
         password.simulate('change', {target: {name: "password",value: 'mango123...'}});
         expect(signUpComponent.state('score')).toBe(3);
+        password.simulate('change', {target: {name: "password",value: ''}});
+        expect(signUpComponent.state('score')).toBe(0);
 
     })
+    it('should handle bad request errors',()=>{
+			mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/register`).reply(400,
+				{
+						Message: "Invalid email address",
+						Status: "Fail"
+					})
+				const signUpComponent = mount(<SignupForm/>)
+				let spyOnHandleSubmit = jest.spyOn(signUpComponent.instance(), 'handleSubmit')
+				signUpComponent.instance().handleSubmit( { preventDefault: ()=>{}})
+				expect(spyOnHandleSubmit).toHaveBeenCalled()
+		})
+		it('should set state to false if token is null', ()=>{
+			let store = {};
+			window.localStorage = {
+			getItem: key =>{ return null},
+			setItem: (key, value)=> { store[key] = value},
+			removeItem: key => Reflect.deleteProperty(store, key)
+			
+		}
+		const signUpComponent = mount(<SignupForm/>)
+		expect(signUpComponent.state('isAuthenticated')).toBe(false)
+		})
    
            
 

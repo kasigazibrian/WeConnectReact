@@ -5,6 +5,7 @@ import NavigationBar from "../home/NavigationBar";
 import {toast} from "react-toastify";
 import axios from "axios/index";
 import {Redirect} from 'react-router-dom'
+import Config from '../../App.config'
 
 class BusinessRegistration extends React.Component {
 	constructor(props) {
@@ -43,7 +44,7 @@ class BusinessRegistration extends React.Component {
 			business_description: this.state.business_description
 		};
 		axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-		axios.post('http://localhost:5000/api/v2/businesses',
+		axios.post(`${Config.API_BASE_URL}/api/v2/businesses`,
 			JSON.stringify(business),
 			{
 				headers: {'Content-Type': 'application/json'}
@@ -130,6 +131,9 @@ class BusinessRegistration extends React.Component {
 											<option value="Automobiles">Automobiles</option>
 											<option value="Health and Medicine">Health and Medicine</option>
 											<option value="Computers & Electronics">Computers & Electronics</option>
+											<option value="Food retail and service">Food retail and service.</option>
+											<option value="Beauty and fragrances.">Beauty and fragrances.</option>
+											<option value="Sports and outdoors.">Sports and outdoors</option>
 									</Input>
 								</Col>
 						</FormGroup>

@@ -8,7 +8,8 @@ import {  Card, CardHeader, CardText, CardBody, Row,
 		  Button, Modal, ModalHeader, ModalBody, 
 		  ModalFooter, FormGroup,  
 		  FormFeedback, Table, Input
-	   } from 'reactstrap';
+		 } from 'reactstrap';
+import Config from '../../App.config'
 
 class UserProfile extends React.Component {
 	constructor(props) {
@@ -30,7 +31,7 @@ class UserProfile extends React.Component {
 		if (localStorage.getItem('token') !== null){
 			this.setState({isAuthenticated: true})
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-			axios.get(`http://localhost:5000/api/v2/auth/register`,  {
+			axios.get(`${Config.API_BASE_URL}/api/v2/auth/register`,  {
 				headers: {'Content-Type':'application/json'}
 			})
 			.then(response=> {
@@ -76,7 +77,7 @@ class UserProfile extends React.Component {
 		if(this.state.valid){
 		const newPassword = {new_password: this.state.password}
 		axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-			axios.post('http://localhost:5000/api/v2/auth/reset-password', JSON.stringify(newPassword), {
+			axios.post(`${Config.API_BASE_URL}/api/v2/auth/reset-password`, JSON.stringify(newPassword), {
 				headers: {'Content-Type':'application/json', 'Accept': 'application/json'}
 			})
 				.then(response=> {
@@ -119,7 +120,7 @@ class UserProfile extends React.Component {
 						<CardTitle></CardTitle>
 						<CardSubtitle>{business.business_category}</CardSubtitle>
 						<CardText>{business.business_description}</CardText>
-						<a to={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
+						<a href={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
 					</CardBody>
 				</Card>
 			</Col>
@@ -167,7 +168,7 @@ class UserProfile extends React.Component {
 						</div>
 						<div className="col-6 bg-info">
 								<div className="my-buttons">
-								<Button className={"btn btn-lg btn-secondary btn-block"} onClick={this.togglePasswordResetModal}>Reset Password</Button>
+								<Button className={"btn btn-lg btn-secondary btn-block"} onClick={this.togglePasswordResetModal}>Change Password</Button>
 								<a href="/register" className={"btn btn-lg btn-secondary btn-block"}>Register Business</a>
 								</div>
 

@@ -3,6 +3,7 @@ import { Alert, Container } from 'reactstrap';
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import NavigationBar from "../home/NavigationBar";
+import Config from '../../App.config'
 
 class LogOut extends React.Component{
 	constructor(props){
@@ -18,7 +19,7 @@ class LogOut extends React.Component{
 	componentDidMount = () => {
 			if(localStorage.getItem('token') !== null){
 					axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-					axios.post('http://localhost:5000/api/v2/auth/logout', {
+					axios.post(`${Config.API_BASE_URL}/api/v2/auth/logout`, {
 							headers: {'Content-Type':'application/json', 'Accept': 'application/json'}
 					})
 				

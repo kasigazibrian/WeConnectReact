@@ -1,12 +1,10 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { shallowToJson } from 'enzyme-to-json'
 import EditBusiness from "../components/business/Editbusiness";
-// import mockAxios from '../__mocks__/axios';
 import MockAdapter from 'axios-mock-adapter';
 import axios from "axios";
-import ReactRouterEnzymeContext from 'react-router-enzyme-context';
-import { MemoryRouter, StaticRouter }    from 'react-router-dom';
+import Config from '../App.config'
+import { MemoryRouter }    from 'react-router-dom';
 
 
 global.getAuth = ()=>{
@@ -20,21 +18,21 @@ window.localStorage = {
     removeItem: key => Reflect.deleteProperty(store, key)
 }
 describe('Edit Business Component', ()=>{
-    const wrapper = mount(<MemoryRouter initialEntries={['/edit_business/:business_id']}><EditBusiness match={match}/></MemoryRouter>);
+    const wrapper = mount(<MemoryRouter><EditBusiness match={match}/></MemoryRouter>);
     const mock = new MockAdapter(axios);
 
-    mock.onPut(`http://localhost:5000/api/v2/businesses/1`).reply(201,
+    mock.onPut(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(201,
         {
             Message: "Business has been updated successfully",
             Status: "Success"
         })
-        mock.onPut(`http://localhost:5000/api/v2/businesses/undefined`).reply(400,
+        mock.onPut(`${Config.API_BASE_URL}/api/v2/businesses/undefined`).reply(400,
         {
             Message: "Business with this ID not found",
             Status: "Fail"
         })
-        mock.onGet(`http://localhost:5000/api/v2/businesses/1`).reply(200,
-             {
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(200,
+            {
                 page: 1,
                 limit: 20,
                 count: 2,
@@ -51,23 +49,12 @@ describe('Edit Business Component', ()=>{
                     contact_number: "256781712929",
                     business_category: "Real Estate",
                     business_description: "This business provides the best video coverage"
-                  },
-                  {
-                    business_id: 3,
-                    business_owner_id: 1,
-                    business_name: "BMW",
-                    business_email: "bmw@gmail.com",
-                    business_location: "Kabale",
-                    contact_number: "256781712926",
-                    business_category: "Automobiles",
-                    business_description: "This business provides the best cars"
                   }
-                ],
-                "Status": "Success"
-              
+            ],
+                Status: "Success"
         })
     it('it matches snapshot', () => {
-        const wrapper = shallow(<EditBusiness/>)
+        const wrapper = shallow(<EditBusiness match={match}/>)
         expect(wrapper.find(EditBusiness)).toMatchSnapshot();
     })
     
@@ -83,7 +70,7 @@ describe('Edit Business Component', ()=>{
         expect(component.find('h1#heading').text()).toContain("Edit Business")
     })
      
-    it('Should have a register button',()=>{
+    it('Should have a save changes button',()=>{
         expect(wrapper.find('button.btn').text()).toContain("Save Changes")
     })
    
@@ -134,8 +121,7 @@ describe('Edit Business Component', ()=>{
         
     });
     it('It handles submit', async ()=>{
-        const component = shallow(<MemoryRouter><EditBusiness/></MemoryRouter>)
-        const EditBusinessComponent = component.find(EditBusiness).dive()
+        const EditBusinessComponent = mount(<EditBusiness match={match}/>)
         // console.log(EditBusinessComponent.props())
         let store = {};
         window.localStorage = {
@@ -149,6 +135,27 @@ describe('Edit Business Component', ()=>{
         await form.simulate('submit',  { preventDefault: ()=>{}})
         
     });
+    it('Should handle network error',()=>{
+        mock.onPut(`${Config.API_BASE_URL}/api/v2/businesses/1`).networkError()
+        const wrapper = mount(<EditBusiness match={match}/>)
+        let spyOnComponentDidMount = jest.spyOn(wrapper.instance(), 'componentWillMount')
+        // console.log(wrapper.instance())
+        wrapper.instance().componentWillMount()
+        wrapper.instance().handleUpdateSubmit({ preventDefault: ()=>{}})
+        expect(spyOnComponentDidMount).toHaveBeenCalled()
+    })
+
+    it('should set isAuthenticated state to false if token is null',()=>{
+        let store = {};
+      window.localStorage = {
+          getItem: key =>{ return null},
+          setItem: (key, value)=> { store[key] = value},
+          removeItem: key => Reflect.deleteProperty(store, key)
+          
+      }
+      const wrapper = shallow(<EditBusiness history={{push: ()=>{}}} match={match}/>)
+      expect(wrapper.state('isAuthenticated')).toBe(false);  
+    })
    
    
 });

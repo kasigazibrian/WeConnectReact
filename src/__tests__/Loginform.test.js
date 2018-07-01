@@ -1,11 +1,10 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { shallowToJson } from 'enzyme-to-json'
 import LoginForm from "../components/user/Loginform";
 import axios from 'axios'
 import { MemoryRouter }    from 'react-router-dom';
-// import moxios from 'moxios'
 import MockAdapter from 'axios-mock-adapter';
+import Config from '../App.config'
 
 
 describe('Login Component', ()=>{
@@ -28,7 +27,7 @@ describe('Login Component', ()=>{
 
     });
     it('Submits the login form', async ()=>{
-       await mock.onPost('http://localhost:5000/api/v2/login').reply(201,
+       await mock.onPost(`${Config.API_BASE_URL}/api/v2/login`).reply(201,
          {
             Token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI",
             Message: "You have successfully logged in",
@@ -59,14 +58,14 @@ describe('Login Component', ()=>{
     })
    it("Handles server errors", ()=>{
        const loginComponent = mount(<LoginForm/>)
-        mock.onPost('http://localhost:5000/api/v2/login').networkError()
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/login`).networkError()
         const form = loginComponent.find('form')
         form.simulate('submit', {preventDefault: ()=>{}})
        
       })
 
     it('Should call the post request method on submit', ()=>{
-        mock.onPost('http://localhost:5000/api/v2/login').reply(400,{
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/login`).reply(400,{
         Message: "Invalid username or password"})
         const wrapper = mount(<LoginForm/>)
         let spyPostRequest = jest.spyOn(wrapper.instance(), 'postRequest')
