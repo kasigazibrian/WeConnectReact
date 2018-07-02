@@ -36,7 +36,8 @@ export default class SearchPage extends React.Component {
 	}
 
 	handleSearchInputChange = event =>{
-		this.setState({[event.target.name]: event.target.value})
+		if(event.target.value === "Location" || event.target.value === "Category"){this.setState({[event.target.name]: ""})}
+		else{ this.setState({[event.target.name]: event.target.value})}
 	};
 	handleSubmit = event =>{
 		const { business_name, category, location} = this.state;

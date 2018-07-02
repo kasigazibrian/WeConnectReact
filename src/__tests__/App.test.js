@@ -2,9 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '../App';
 import { shallow, mount } from 'enzyme';
+import Routes from '../App'
 import NavigationBar from '../components/home/NavigationBar'
 import HomeCarousel from '../components/home/Carousel'
 import HomeJumbotron from '../components/home/Jumbotron'
+import { MemoryRouter } from 'react-router-dom'
+import BusinessRegistration from '../components/business/RegisterBusiness'
 // import { shallowToJson } from 'enzyme-to-json'
 
  describe('App Component', ()=>{
@@ -48,6 +51,5 @@ import HomeJumbotron from '../components/home/Jumbotron'
       expect(spyUnsetAuth).toHaveBeenCalled()
       expect(wrapper.state("isAuthenticated")).toBe(false)
     })
-
 
 });

@@ -165,6 +165,16 @@ describe('User Profile Component', ()=>{
         mock.onGet(`${Config.API_BASE_URL}/api/v2/auth/register`).networkError()
         const wrapper = mount(<UserProfile/>)
     })
+    it('It should catch any bad request errors for missing token on page load',()=>{
+        let store = {};
+        window.localStorage = {
+        getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+        setItem: (key, value)=> { store[key] = value},
+        removeItem: key => Reflect.deleteProperty(store, key)
+        }
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/auth/register`).reply(400, {Message: "Token is missing"})
+        const wrapper = mount(<UserProfile/>)
+    })
     it('check it verifies confirm password', async ()=>{
         let store = {};
         window.localStorage = {

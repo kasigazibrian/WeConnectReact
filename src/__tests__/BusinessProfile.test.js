@@ -95,7 +95,7 @@ describe('Business Profile Component', ()=>{
       expect(Component.state('review').props.children).toBe('this is my review');  
     });
 
-    it('check it sets auth to false state when no token is provided', ()=>{
+    it('check it sets auth to false when no token is provided', ()=>{
       let store = {};
       window.localStorage = {
           getItem: key =>{ return null},
@@ -108,7 +108,7 @@ describe('Business Profile Component', ()=>{
       expect(Component.state('isAuthenticated')).toBe(false);  
     });
 
-    it('check it sets auth to true state when token is provided', ()=>{
+    it('check it sets auth to true when token is provided', ()=>{
       let store = {};
       window.localStorage = {
           getItem: key =>{ return {"Token": "usertoken"}},
@@ -133,9 +133,10 @@ describe('Business Profile Component', ()=>{
       
         let review = Component.find('#content')
         review.simulate('change', {target: {name: "password",value: 'mango', getContent: ()=>{return(<p>this is my review</p>)}}})
-        
+        let spyOnSubmit = jest.spyOn(Component.instance(), 'handleSubmit')
         let form = Component.find('form')
         form.simulate('submit', {preventDefault: ()=>{}})
+        
     })
 
     it('Should return the right permission', ()=>{
@@ -235,6 +236,20 @@ describe('Business Profile Component', ()=>{
       let spyOnGetReviews = jest.spyOn(businessProfileComponent.instance(), 'getReviews') 
       businessProfileComponent.instance().getReviews()
       expect(spyOnGetReviews).toHaveBeenCalled()
+    })
+
+    it('should show the modal on button click', async ()=>{
+      let store = {};
+      window.localStorage = {
+      getItem: key =>{return {"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImJyaWFuIiwiZXhwIjoxNTI5Njg1NTc3fQ.WJ2_sTwagTSBJ73iuBogIMVA6M8752ZUlCPOORNuWCI"}},
+      setItem: (key, value)=> { store[key] = value},
+      removeItem: key => Reflect.deleteProperty(store, key)
+      }
+      const wrapper = shallow(<MemoryRouter><BusinessProfile match={{params: {business_id: 1}}}/></MemoryRouter>);
+      const businessProfileComponent = wrapper.find(BusinessProfile).dive()
+      let Button = businessProfileComponent.find(".btn-danger")
+      await Button.simulate('click')
+      expect(businessProfileComponent.state('modal')).toBe(true)
     })
    
 });
