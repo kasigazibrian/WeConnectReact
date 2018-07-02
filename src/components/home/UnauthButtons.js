@@ -6,6 +6,7 @@ import {
 import Login from 'react-icons/lib/fa/sign-in';
 import Signup from 'react-icons/lib/fa/user-plus'
 
+// Buttons displayed if a user is not logged in
 const UnauthButtons = () => {
 	return (
 		<DropdownMenu >

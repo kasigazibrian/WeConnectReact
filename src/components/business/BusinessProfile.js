@@ -24,6 +24,7 @@ class BusinessProfile extends React.Component{
 		}
 	}
 	componentWillMount = ()=>{
+		// Function to check for user authentication
 		if (localStorage.getItem('token') === null){
 			this.setState({isAuthenticated: false});
 			}
@@ -31,20 +32,22 @@ class BusinessProfile extends React.Component{
 		}
 
 	getReviews = (businessId)=>{
-			axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${businessId}/reviews`)
-			.then(response =>{
-					this.setState({reviews: response.data["Business Reviews"]})
-			})
-			.catch(error => {
-				if(error.response !== undefined){
-					toast.info("No business reviews found",{position: toast.POSITION.BOTTOM_CENTER});
-				}
-				else{
-					toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
-				}
-			})
-		}
+		// Function to check for user authentication
+		axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${businessId}/reviews`)
+		.then(response =>{
+				this.setState({reviews: response.data["Business Reviews"]})
+		})
+		.catch(error => {
+			if(error.response !== undefined){
+				toast.info("No business reviews found",{position: toast.POSITION.BOTTOM_CENTER});
+			}
+			else{
+				toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
+			}
+		})
+	}
  componentDidMount = ()=>{
+	 // Function to return a specific business
 	axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`)
 		.then(response=> {
 				this.setState({business: response.data.Businesses[0]
@@ -54,28 +57,32 @@ class BusinessProfile extends React.Component{
 			toast.error("Business with id "+ this.state.businessId +" not found", {position: toast.POSITION.BOTTOM_CENTER})
 
 		});
-
 		this.getReviews(this.state.businessId)
-	
 	}
 
+	// Function to toggle modal view option
 	toggle = () => {
     this.setState({
       modal: !this.state.modal
     });
   }
 	
+	//Function to obtain review changes
   handleReviewChange = (e) =>{
 		this.setState({review: e.target.getContent()});
 		};
-
+	
+	// Function to handle adding a review permission
 	handleAddReviewPermissions = (businessOwnerID) =>{
 		if(parseInt(localStorage.getItem('id'), 10) === businessOwnerID) return "collapse"; else return "show";
 	}
+
+	// Function to handle create and edit permissions
 	handleCreateEditPermissions = (businessOwnerID) =>{
 		if(parseInt(localStorage.getItem('id'), 10) === businessOwnerID) return "show";	else return "collapse";
 	}
-
+	
+	// Function to handle deleting of a business
 	handleDelete = (e)=>{
 		e.preventDefault();
 		const id = this.state.businessId;
@@ -103,9 +110,14 @@ class BusinessProfile extends React.Component{
 					}
 		} )
 	}
+	// Function to convert the reviews into html 
+	createMarkup = (review) =>{
+		return {__html: review.review};
+	}
+
+	// Funtion to handle adding a review to a business
   handleSubmit = e =>{
 		e.preventDefault();
-
 		const review = {review: this.state.review};
 		axios.post(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}/reviews`, JSON.stringify(review),
 		{
@@ -146,14 +158,12 @@ render(){
 			pathname: '/businesses'
 		}} />);
 	}
-
+  // Get adding a review permisiion
 	let addReviewPermission = this.handleAddReviewPermissions(business.business_owner_id)
+	// Get create and delete permission
 	let createEditPermission = this.handleCreateEditPermissions(business.business_owner_id)
-	function createMarkup(review){
-			return {__html: review.review};
-		}
-	
-	let review_list = reviews.map((review, index)=>(<ul className="review" key={index}><li  dangerouslySetInnerHTML={createMarkup(review)}>
+	// Function to destructure the reviews
+	let review_list = reviews.map((review, index)=>(<ul className="review" key={index}><li  dangerouslySetInnerHTML={this.createMarkup(review)}>
 		</li>
 		<li className="profile-labels">Added on: {review.date_created}</li><br/>
 		</ul>));

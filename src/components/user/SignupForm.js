@@ -14,8 +14,8 @@ export default class SignupForm extends React.Component {
 						username: '',
 						password: '',
 						email: '',
-						first_name: '',
-						last_name: '',
+						firstName: '',
+						lastName: '',
 						gender: '',
 						confirmPassword: '',
 						isAuthenticated: false,
@@ -28,12 +28,14 @@ export default class SignupForm extends React.Component {
 }
 
 	componentWillMount(){
+		// Check for user authentiucation
 			if (localStorage.getItem('token') === null){
 				this.setState({isAuthenticated: false})
 			}
 			else( this.setState({isAuthenticated: true}) )
 	}
 
+	// Function to handle password change 
 	handlePasswordChange = e => {
 			let evaluation = zxcvbn(e.target.value);
 			this.setState({password: e.target.value, score: evaluation.score,
@@ -55,8 +57,8 @@ export default class SignupForm extends React.Component {
 			const user = {
 					username: this.state.username,
 					password: this.state.password,
-					last_name: this.state.last_name,
-					first_name: this.state.first_name,
+					last_name: this.state.lastName,
+					first_name: this.state.firstName,
 					gender: this.state.gender,
 					email: this.state.email
 			};
@@ -82,44 +84,44 @@ export default class SignupForm extends React.Component {
 	};
 	render() {
 
-			if (this.state.addedSuccessfully){
-					return (
-							<div>
-									<Redirect to={{
-											pathname: '/login',
-											state: {isAuthenticated: true }
-									}} />
-							</div>
-					);
-			}
-			const {suggestions, score} = this.state;
-			let cssClass = "";
-			let message = "";
-			if (score === 0){
-					cssClass = "weak";
-					message = "Weak";
+		if (this.state.addedSuccessfully){
+				return (
+						<div>
+								<Redirect to={{
+										pathname: '/login',
+										state: {isAuthenticated: true }
+								}} />
+						</div>
+				);
+		}
+		const {suggestions, score} = this.state;
+		let cssClass = "";
+		let message = "";
+		if (score === 0){
+			cssClass = "weak";
+			message = "Weak";
 
-			}
-			else if (score === 1){
-					cssClass = "fair";
-					message = "Fair";
-			}
-			else if (score === 2){
-					cssClass = "good";
-					message = "Good";
-			}
-			else if (score === 3){
-					cssClass = "strong";
-					message = "Strong";
-			}
-			else if (score === 4){
-					cssClass = "very-strong";
-					message = "Very Strong";
-			}
-			else {
-					message = "";
-					cssClass = ""
-			}
+		}
+		else if (score === 1){
+			cssClass = "fair";
+			message = "Fair";
+		}
+		else if (score === 2){
+			cssClass = "good";
+			message = "Good";
+		}
+		else if (score === 3){
+			cssClass = "strong";
+			message = "Strong";
+		}
+		else if (score === 4){
+			cssClass = "very-strong";
+			message = "Very Strong";
+		}
+		else {
+			message = "";
+			cssClass = ""
+		}
 
 			return (
 					<div className="signup-background-image">
@@ -135,7 +137,7 @@ export default class SignupForm extends React.Component {
 											<FormGroup >
 													<Col sm={"9"}>
 															<label id="first-name" className="label-fontcolor"  >First Name:</label>
-															<input onChange={this.handleChange} name="first_name" type="text" id="first_name"
+															<input onChange={this.handleChange} name="firstName" type="text" id="first_name"
 																			style={{borderRadius: "20px"}} className="form-control" required="true">
 
 															</input>
@@ -144,7 +146,7 @@ export default class SignupForm extends React.Component {
 											<FormGroup >
 													<Col sm={"9"}>
 															<label id="last-name" name="last_name"  className="label-fontcolor"  >Last Name:</label>
-															<input name="last_name" onChange={this.handleChange} type="text" id="last_name"
+															<input name="last_name" onChange={this.handleChange} type="text" id="lastName"
 																			style={{borderRadius: "20px"}}
 																			className="form-control" required="true">
 

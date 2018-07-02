@@ -7,6 +7,7 @@ import {
 	import BriefCase from 'react-icons/lib/fa/briefcase';
 	import User from 'react-icons/lib/fa/user-md'
 
+	// Buttons present in the navigation bar if user is authenticated
 const AuthButtons = ()=>{
 	return (
 		<DropdownMenu >

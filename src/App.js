@@ -3,7 +3,7 @@ import BusinessCatalog from "./components/business/BusinessCatalog";
 import BusinessProfile from "./components/business/BusinessProfile";
 import LoginForm from "./components/user/Loginform";
 import HomeCarousel from "./components/home/Carousel";
-import SearchPage from "./components/business/searchpage";
+import SearchPage from "./components/business/SearchPage";
 import SignupForm from "./components/user/SignupForm";
 import BusinessRegistration from "./components/business/RegisterBusiness";
 import { BrowserRouter as Router, Route} from "react-router-dom";

@@ -8,6 +8,8 @@ import {
 } from 'reactstrap';
 import HomeJumbotron from "../home/Jumbotron";
 import NavigationBar from "../home/NavigationBar";
+
+// List of images that will be displayed in the carousel
 const items = [
 	{
 			src: './images/business_slide8.jpg',
@@ -38,41 +40,43 @@ class HomeCarousel extends Component {
 			this.state = { activeIndex: 0,
 			isAuthenticated: this.props.getAuth()};
 	}
-
+	componentWillMount = ()=>{
+		// Check for user authentication
+			if (localStorage.getItem('token') === null){
+					this.setState({isAuthenticated: false})
+			}
+			else( this.setState({isAuthenticated: true}) )
+	}
+  // Animate image when exiting
 	onExiting = () => {
 			this.animating = true;
 	}
-
+	 // Stop animating when image has exited successfully
 	onExited = ()=> {
 			this.animating = false;
 	}
 
+	// Move to next corusel item to display
 	next =()=> {
 			if (this.animating) return;
 			const nextIndex = this.state.activeIndex === items.length - 1 ? 0 : this.state.activeIndex + 1;
 			this.setState({ activeIndex: nextIndex });
 	}
-
+	// Move to previous corusel item to display
 	previous = ()=> {
 			if (this.animating) return;
 			const nextIndex = this.state.activeIndex === 0 ? items.length - 1 : this.state.activeIndex - 1;
 			this.setState({ activeIndex: nextIndex });
 	}
 
+	// Go to index when 
 	goToIndex = (newIndex) => {
 			if (this.animating) return;
 			this.setState({ activeIndex: newIndex });
 	}
-	componentWillMount = ()=>{
-			if (localStorage.getItem('token') === null){
-					this.setState({isAuthenticated: false})
-			}
-			else( this.setState({isAuthenticated: true}) )
-	}
-
 	render() {
 		const { activeIndex } = this.state;
-
+		// Function to destructure carousel items
 		const slides = items.map((item) => {
 			return (
 				<CarouselItem
@@ -90,9 +94,7 @@ class HomeCarousel extends Component {
 				<div style={{backgroundColor: "grey"}}>
 						<NavigationBar auth={this.state.isAuthenticated}/>
 						<Container>
-				
 						<HomeJumbotron auth={this.state.isAuthenticated}/>
-
 						<Carousel
 								activeIndex={activeIndex}
 								next={this.next}

@@ -19,7 +19,6 @@ import Account from 'react-icons/lib/fa/user';
 export default class NavigationBar extends React.Component {
 constructor(props) {
 		super(props);
-
 		this.toggle = this.toggle.bind(this);
 		this.state = {
 				isOpen: false,
@@ -28,9 +27,9 @@ constructor(props) {
 }
 
 toggle() {
-		this.setState({
-				isOpen: !this.state.isOpen
-		});
+	this.setState({
+			isOpen: !this.state.isOpen
+	});
 }
     render() {
         let navBarButtons = this.state.isAuthenticated ? <AuthButtons/> : <UnauthButtons/>;

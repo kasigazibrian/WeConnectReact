@@ -22,31 +22,35 @@ export default class SearchPage extends React.Component {
 			isAuthenticated: this.props.getAuth(),
 			category: "",
 			location: "",
-			business_name: "",
+			businessName: "",
 			count: 0,
 			businesses: []
 		};
 	}
 
 	componentWillMount = ()=>{
+		// Check for user authentication
 		if (localStorage.getItem('token') === null){
 			this.setState({isAuthenticated: false})
 		}
 		else( this.setState({isAuthenticated: true}) )
 	}
-
+	// Function to handle search input values
 	handleSearchInputChange = event =>{
-		this.setState({[event.target.name]: event.target.value})
+		if(event.target.value === "Location" || event.target.value === "Category"){this.setState({[event.target.name]: ""})}
+		else{ this.setState({[event.target.name]: event.target.value})}
 	};
+	// Function to handle submit of the search input values
 	handleSubmit = event =>{
-		const { business_name, category, location} = this.state;
+		const { businessName, category, location} = this.state;
 		event.preventDefault();
-		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?q=${business_name}&category=${category}&location=${location}`,
+		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?q=${businessName}&category=${category}&location=${location}`,
 			{
 				headers: {'Content-Type':'application/json'}
 			})
 			.then(response=> {
 				toast.success("We have found "+response.data.count + " results", {position: toast.POSITION.TOP_CENTER});
+				// Set state with recieved data
 				this.setState({businesses: response.data.Businesses, count: response.data.count});
 			})
 			.catch(error =>{
@@ -60,6 +64,7 @@ export default class SearchPage extends React.Component {
 			});
 
 	};
+	// Funtion to toggle navigation bar when window is not maximised
 	toggle = ()=> {
 		this.setState({
 			isOpen: !this.state.isOpen
@@ -67,6 +72,7 @@ export default class SearchPage extends React.Component {
 	}
 	render() {
 		const { count, businesses } = this.state;
+		// Check if search results have been obtained successfully
 		if (count > 0){
 			return (
 				<div>

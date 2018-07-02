@@ -15,11 +15,13 @@ export default class LoginForm extends React.Component {
 			isAuthenticated: false
 		}
 	}
-
+  // Function to handle user input and set state
 	handleChange = event => {
 		this.setState({ [event.target.name]: event.target.value });
 
 	};
+
+	// Function to handle posting a request to the API
 	postRequest = (user) =>{
 		axios.post(`${Config.API_BASE_URL}/api/v2/login`,
 		JSON.stringify(user),
@@ -35,9 +37,8 @@ export default class LoginForm extends React.Component {
 						this.setState({isAuthenticated: true, userProfile: response.data.User});
 
 				}
-
-
-		})
+			}
+		)
 		.catch(error=>{
 			if(error.response !== undefined){
 				toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
@@ -47,7 +48,7 @@ export default class LoginForm extends React.Component {
 			}
 		})
 }
-
+// Function to handle user input on submit
 handleSubmit = event => {
 	event.preventDefault();
 	const user = {
@@ -59,15 +60,14 @@ handleSubmit = event => {
 };
 
 render() {
+	// Check if a user has been authenticated and redirect them to the user profile page
 	if (this.state.isAuthenticated){
 		return (
 				<div>
-						
 						<Redirect to={{
 								pathname: '/authuser/userprofile',
 								state: {isAuthenticated: true }
 						}} />
-		
 				</div>
 		);
 	}
