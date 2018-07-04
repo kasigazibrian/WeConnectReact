@@ -56,7 +56,7 @@ unsetAuth = ()=>{
                   <Route exact path="/authuser/userprofile" component={()=> <UserProfile getAuth={this.getAuth}/>} />
                   <Route exact strict path="/businesses/:business_id" render={(props)=><BusinessProfile {...props}/>}/>
                   <Route exact strict path="/search_results" component={SearchResults}/>
-                  <Route exact strict path="/edit_business/:business_id" component={()=><EditBusiness getAuth={this.getAuth}/>}/>
+                  <Route exact strict path="/edit_business/:business_id" component={(props)=><EditBusiness {...props} getAuth={this.getAuth}/>}/>
               </div>
           </Router>
       );

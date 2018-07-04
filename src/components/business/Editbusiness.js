@@ -3,7 +3,8 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import NavigationBar from "../home/NavigationBar";
 import {   FormGroup, Container, Col, Input } from 'reactstrap';
-import {Redirect, withRouter} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
+import Config from '../../App.config'
 
 class EditBusiness extends React.Component{
 	constructor(props){
@@ -31,7 +32,7 @@ class EditBusiness extends React.Component{
 			}
 			else {
 					this.setState({isAuthenticated: true});
-					axios.get(`http://localhost:5000/api/v2/businesses/${this.state.businessId}`)
+					axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`)
 							.then(response=> {
 									this.setState({
 											businessName: response.data.Businesses[0].business_name,
@@ -45,7 +46,6 @@ class EditBusiness extends React.Component{
 							})
 							.catch(error =>{
 								if(error.response !== undefined){
-									// console.log(error.response)
 									toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
 								}
 								else{
@@ -72,7 +72,7 @@ class EditBusiness extends React.Component{
 					business_description: this.state.businessDescription
 			};
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-			axios.put(`http://localhost:5000/api/v2/businesses/${this.state.businessId}`,
+			axios.put(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`,
 					JSON.stringify(business),
 					{headers: {'Content-Type': 'application/json'}
 					})
@@ -94,7 +94,6 @@ render(){
 
 	if (this.state.updatedSuccessfully){
 			return(
-			
 				<Redirect to={`/businesses/${this.state.businessId}`}/>	
 			
 			)
@@ -150,6 +149,7 @@ render(){
 													<option value="Real Estate">Real Estate</option>
 													<option value="Education">Education</option>
 													<option value="Automobiles">Automobiles</option>
+													<option value="Computers & Electronics">Computers & Electronics</option>
 													<option value="Health and Medicine">Health and Medicine</option>
 													<option value="Food retail and service">Food retail and service.</option>
 													<option value="Beauty and fragrances.">Beauty and fragrances.</option>
@@ -170,4 +170,4 @@ render(){
 	);
 }
 }
-export default withRouter(EditBusiness)
+export default EditBusiness

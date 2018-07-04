@@ -3,18 +3,16 @@ import { shallow, mount } from 'enzyme';
 import BusinessCatalog from '../components/business/BusinessCatalog';
 import NavigationBar from '../components/home/NavigationBar';
 import MockAdapter from 'axios-mock-adapter'
-import renderer from 'react-test-renderer'
-import { MemoryRouter, StaticRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import axios from 'axios'
-import { spy } from 'sinon';
-import { BrowserRouter as Router }    from 'react-router-dom';
+import Config from '../App.config'
 
 describe('Business Catalog Component', ()=>{
     const mock = new MockAdapter(axios)
    
    
     it('Should return all businesses', ()=>{
-        mock.onGet(`http://localhost:5000/api/v2/businesses?limit=6&page=1`).reply(200,
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?limit=6&page=1`).reply(200,
              {
                 page: 1,
                 limit: 20,
@@ -75,7 +73,7 @@ describe('Business Catalog Component', ()=>{
     })
 
     it('Should set state when it recieves businesses', ()=>{
-    mock.onGet(`http://localhost:5000/api/v2/businesses?limit=6&page=1`).reply(200,
+    mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?limit=6&page=1`).reply(200,
     {
        page: 1,
        limit: 20,
@@ -137,7 +135,7 @@ describe('Business Catalog Component', ()=>{
           removeItem: key => Reflect.deleteProperty(store, key)
           
       }
-      mock.onGet(`http://localhost:5000/api/v2/businesses?limit=2&page=1`).reply(200,
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?limit=2&page=1`).reply(200,
       {
          page: 1,
          limit: 20,
@@ -202,7 +200,7 @@ describe('Business Catalog Component', ()=>{
      })
 
      it('Should catch a bad request', ()=>{
-      mock.onGet(`http://localhost:5000/api/v2/businesses?limit=6&page=1`).reply(400, {Message: "Please ensure the limit is an integer"})
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?limit=6&page=1`).reply(400, {Message: "Please ensure the limit is an integer"})
       const wrapper = mount(<BusinessCatalog/>);
       let spyComponentDidMount = jest.spyOn(wrapper.instance(), 'componentDidMount')
       let spyOnchange= jest.spyOn(wrapper.instance(), 'onChange')
@@ -213,7 +211,7 @@ describe('Business Catalog Component', ()=>{
 
      })
      it('Should catch a server error', ()=>{
-      mock.onGet(`http://localhost:5000/api/v2/businesses?limit=6&page=1`).networkError()
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?limit=6&page=1`).networkError()
       const wrapper = mount(<BusinessCatalog/>);
       let spyComponentDidMount = jest.spyOn(wrapper.instance(), 'componentDidMount')
       let spyOnchange= jest.spyOn(wrapper.instance(), 'onChange')

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import NavigationBar from "../home/NavigationBar";
 import zxcvbn from "zxcvbn"
 import { Redirect } from 'react-router-dom'
-
+import Config from '../../App.config'
 
 export default class SignupForm extends React.Component {
 	constructor(props) {
@@ -29,7 +29,7 @@ export default class SignupForm extends React.Component {
 
 	componentWillMount(){
 			if (localStorage.getItem('token') === null){
-					this.setState({isAuthenticated: false})
+				this.setState({isAuthenticated: false})
 			}
 			else( this.setState({isAuthenticated: true}) )
 	}
@@ -46,7 +46,6 @@ export default class SignupForm extends React.Component {
 
 	};
 
-	
 	handleSubmit = event => {
 			event.preventDefault();
 			if (this.state.password !== this.state.confirmPassword){
@@ -62,23 +61,23 @@ export default class SignupForm extends React.Component {
 					email: this.state.email
 			};
 
-			axios.post('http://localhost:5000/api/v2/auth/register',
-					JSON.stringify(user),
-					{
-							headers: {'Content-Type':'application/json'}
-					})
-					.then(res => {
-							this.setState({addedSuccessfully: true})
-							toast.success(res.data.Message+'! You can now login!',{position: toast.POSITION.BOTTOM_CENTER});
-					})
-					.catch(error=>{
-						if(error.response !== undefined){
-							toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
-						}
-						else{
-							toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
-						}
-					})
+	axios.post(`${Config.API_BASE_URL}/api/v2/auth/register`,
+		JSON.stringify(user),
+		{
+				headers: {'Content-Type':'application/json'}
+		})
+		.then(res => {
+				this.setState({addedSuccessfully: true})
+				toast.success(res.data.Message+'! You can now login!',{position: toast.POSITION.BOTTOM_CENTER});
+		})
+		.catch(error=>{
+			if(error.response !== undefined){
+				toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
+			}
+			else{
+				toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
+			}
+		})
 	}
 	};
 	render() {

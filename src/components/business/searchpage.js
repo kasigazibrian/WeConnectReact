@@ -12,6 +12,7 @@ import axios from 'axios'
 import {toast} from "react-toastify";
 import { Redirect } from 'react-router-dom'
 import logo from '../../images/logo.png';
+import Config from '../../App.config'
 
 export default class SearchPage extends React.Component {
 	constructor(props) {
@@ -40,7 +41,7 @@ export default class SearchPage extends React.Component {
 	handleSubmit = event =>{
 		const { business_name, category, location} = this.state;
 		event.preventDefault();
-		axios.get(`http://localhost:5000/api/v2/businesses?q=${business_name}&category=${category}&location=${location}`,
+		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?q=${business_name}&category=${category}&location=${location}`,
 			{
 				headers: {'Content-Type':'application/json'}
 			})

@@ -7,6 +7,7 @@ import {  Redirect } from 'react-router-dom'
 import { toast } from "react-toastify"
 import Trash from 'react-icons/lib/fa/trash';
 import Edit from 'react-icons/lib/fa/edit';
+import Config from '../../App.config'
 
 class BusinessProfile extends React.Component{
   constructor(props) {
@@ -25,36 +26,37 @@ class BusinessProfile extends React.Component{
 	componentWillMount = ()=>{
 		if (localStorage.getItem('token') === null){
 			this.setState({isAuthenticated: false});
-		
-	
 			}
 		else( this.setState({isAuthenticated: true}) )
 		}
 
-
-componentDidMount = ()=>{
-		axios.get(`http://localhost:5000/api/v2/businesses/${this.state.businessId}`)
-			.then(response=> {
-					this.setState({business: response.data.Businesses[0]
-			})
-		})
-			.catch(error =>{
-				toast.error("Business with id "+ this.state.businessId +" not found", {position: toast.POSITION.BOTTOM_CENTER})
-
-			});
-		axios.get(`http://localhost:5000/api/v2/businesses/${this.state.businessId}/reviews`)
+	getReviews = (businessId)=>{
+			axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${businessId}/reviews`)
 			.then(response =>{
 					this.setState({reviews: response.data["Business Reviews"]})
 			})
 			.catch(error => {
 				if(error.response !== undefined){
-					// console.log(error.response)
 					toast.info("No business reviews found",{position: toast.POSITION.BOTTOM_CENTER});
 				}
 				else{
 					toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
 				}
 			})
+		}
+ componentDidMount = ()=>{
+	axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`)
+		.then(response=> {
+				this.setState({business: response.data.Businesses[0]
+			})
+		})
+		.catch(error =>{
+			toast.error("Business with id "+ this.state.businessId +" not found", {position: toast.POSITION.BOTTOM_CENTER})
+
+		});
+
+		this.getReviews(this.state.businessId)
+	
 	}
 
 	toggle = () => {
@@ -63,7 +65,6 @@ componentDidMount = ()=>{
     });
   }
 	
-
   handleReviewChange = (e) =>{
 		this.setState({review: e.target.getContent()});
 		};
@@ -79,21 +80,18 @@ componentDidMount = ()=>{
 		e.preventDefault();
 		const id = this.state.businessId;
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
-			axios.delete(`http://localhost:5000/api/v2/businesses/${id}`, {
+			axios.delete(`${Config.API_BASE_URL}/api/v2/businesses/${id}`, {
 					headers: {'Content-Type':'application/json'}
 			})
 				.then(response=> {
 						if (response.data.Status === "Success")
 						{
-								toast.success(response.data.Message,{position: toast.POSITION.TOP_CENTER});
-								this.setState({modal: !this.state.modal, deletedSuccessfully: true})
-
+							toast.success(response.data.Message,{position: toast.POSITION.TOP_CENTER});
+							this.setState({modal: !this.state.modal, deletedSuccessfully: true})
 						}
 						else{
-								toast.error(response.data.Message, {position: toast.POSITION.BOTTOM_CENTER});
+							toast.error(response.data.Message, {position: toast.POSITION.BOTTOM_CENTER});
 					  }
-
-
 				})
 				.catch( error =>
 				{
@@ -103,21 +101,21 @@ componentDidMount = ()=>{
 					else{
 						toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
 					}
-			} )
+		} )
 	}
-
   handleSubmit = e =>{
 		e.preventDefault();
 
 		const review = {review: this.state.review};
-		axios.post(`http://localhost:5000/api/v2/businesses/${this.state.businessId}/reviews`, JSON.stringify(review),
+		axios.post(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}/reviews`, JSON.stringify(review),
 		{
 				headers: {'Content-Type':'application/json'}
 		})
 		.then(res => {
 				if (res.data.Status === "Success") {
-						toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
-
+					toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
+					this.getReviews(this.state.businessId)
+					
 				}
 				else{
 						toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
@@ -125,7 +123,6 @@ componentDidMount = ()=>{
     })
 		.catch(error => {
 			if(error.response !== undefined){
-				console.log(error.response)
 				toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
 			}
 			else{
@@ -205,7 +202,7 @@ render(){
 							<Col xs="6" className="bg-secondary">
 								<Container>
 									<div className="content-right">
-										<form onSubmit={this.handleSubmit}>
+										<form id="add-review" onSubmit={this.handleSubmit}>
 										  <div className={addReviewPermission}>
 												<FormGroup >
 													<h3 >Add Business Review:</h3>

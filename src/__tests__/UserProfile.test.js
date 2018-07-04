@@ -1,22 +1,22 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { shallowToJson } from 'enzyme-to-json'
 import UserProfile from "../components/user/UserProfile";
 import axios from 'axios'
 import { MemoryRouter }    from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
 import NavigationBar from '../components/home/NavigationBar';
+import Config from '../App.config'
 
 
 describe('User Profile Component', ()=>{
     
     let mock = new MockAdapter(axios);
-    mock.onPost(`http://localhost:5000/api/v2/auth/reset-password`).reply(201,
+    mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/reset-password`).reply(201,
         {
             Message: 'You password has been reset successfully',
             Status: "Success"}
     )
-    mock.onGet(`http://localhost:5000/api/v2/auth/register`).reply(201,
+    mock.onGet(`${Config.API_BASE_URL}/api/v2/auth/register`).reply(201,
         {
             Message: "User information retrieved successfully",
             Status: "Success",
@@ -145,7 +145,7 @@ describe('User Profile Component', ()=>{
         setItem: (key, value)=> { store[key] = value},
         removeItem: key => Reflect.deleteProperty(store, key)
         }
-        mock.onPost('http://localhost:5000/api/v2/auth/reset-password').networkError()
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/reset-password`).networkError()
         let userProfileComponent = mount(<UserProfile/>);
         userProfileComponent.setState({password: "mango", confirmPassword: "mango"})
         const form = userProfileComponent.find('form')
@@ -162,7 +162,7 @@ describe('User Profile Component', ()=>{
         setItem: (key, value)=> { store[key] = value},
         removeItem: key => Reflect.deleteProperty(store, key)
         }
-        mock.onGet(`http://localhost:5000/api/v2/auth/register`).networkError()
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/auth/register`).networkError()
         const wrapper = mount(<UserProfile/>)
     })
     it('check it verifies confirm password', async ()=>{
@@ -187,7 +187,7 @@ describe('User Profile Component', ()=>{
             wrapper.setState({password: "mango", confirmPassword: "sdsd"}, ()=>{
                 const form = wrapper.find('form')
                 form.simulate('submit')
-            //    expect(wrapper.instance().toHaveBeenCalled()
+        
         })
     })
          

@@ -27,15 +27,11 @@ constructor(props) {
 		};
 }
 
-
-
-
 toggle() {
 		this.setState({
 				isOpen: !this.state.isOpen
 		});
 }
-
     render() {
         let navBarButtons = this.state.isAuthenticated ? <AuthButtons/> : <UnauthButtons/>;
         return (

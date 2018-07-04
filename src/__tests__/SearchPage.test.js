@@ -4,6 +4,7 @@ import MockAdapter from 'axios-mock-adapter'
 import { MemoryRouter } from 'react-router-dom'
 import axios from 'axios'
 import SearchPage from '../components/business/searchpage';
+import Config from '../App.config'
 
 global.getAuth = ()=>{
   return false
@@ -11,7 +12,7 @@ global.getAuth = ()=>{
 describe('Business Search page Component', ()=>{
     const mock = new MockAdapter(axios)
     const wrapper = mount(<SearchPage getAuth={getAuth}/>)
-      mock.onGet(`http://localhost:5000/api/v2/businesses?q=BMW&category=Automobiles&location=Kabale`).reply(200,
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=BMW&category=Automobiles&location=Kabale`).reply(200,
         {
           page: 1,
           limit: 20,
@@ -64,7 +65,7 @@ describe('Business Search page Component', ()=>{
    });
 
    it('Should catch any errors returned', ()=>{
-      mock.onGet(`http://localhost:5000/api/v2/businesses?q=&category=&location=`).reply(400,{
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=&category=&location=`).reply(400,{
         Message: "No businesses were obtained"}
     )
     const wrapper = mount(<SearchPage getAuth={getAuth}/>)
@@ -73,7 +74,7 @@ describe('Business Search page Component', ()=>{
    })
 
    it('Should return error if server is not running', ()=>{
-      mock.onGet(`http://localhost:5000/api/v2/businesses?q=&category=&location=`).networkError()
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=&category=&location=`).networkError()
       const wrapper = mount(<SearchPage getAuth={getAuth}/>)
       let form = wrapper.find('form')
       form.simulate('submit')
