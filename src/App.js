@@ -1,24 +1,19 @@
-import React, { Component } from 'react';
-import { Col, Container, Row, FormGroup } from "reactstrap"
-// import NavigationBar from "./NavigationBar";
-import BusinessCatalog from "./BusinessCatalog";
-import BusinessProfile from "./BusinessProfile";
-import LoginForm from "./Loginform";
-import HomeCarousel from "./carousel";
-import SearchPage from "./searchpage";
-import MyJumbotron from "./Home";
-import SignupForm from "./SignupForm";
-// import BusinessCatalog from "./BusinessCatalog";
-//import LoginForm from "./Loginform";
-//import SignupForm from "./SignupForm";
-import BusinessRegistration from "./RegisterBusiness";
+import React from 'react';
+import BusinessCatalog from "./components/business/BusinessCatalog";
+import BusinessProfile from "./components/business/BusinessProfile";
+import LoginForm from "./components/user/Loginform";
+import HomeCarousel from "./components/home/Carousel";
+import SearchPage from "./components/business/searchpage";
+import SignupForm from "./components/user/SignupForm";
+import BusinessRegistration from "./components/business/RegisterBusiness";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
-import LogOut from "./Logout";
-import ResetPassword from "./ResetPassword";
-import EditBusiness from "./EditBusiness";
-import DeleteBusiness from './DeleteBusiness'
+
+import LogOut from "./components/user/Logout";
+import EditBusiness from "./components/business/Editbusiness";
+import DeleteBusiness from './components/business/DeleteBusiness'
+import SearchResults from "./components/business/SearchResults";
+import UserProfile from "./components/user/UserProfile"
 
 
 
@@ -27,20 +22,21 @@ class App extends React.Component {
 constructor(props){
     super(props);
     this.state = {
-        is_authenticated: false
-    }
+        isAuthenticated: false
+    };    
+
 }
 
 getAuth = ()=>{
-    return this.state.is_authenticated
+    return this.state.isAuthenticated
 };
 
 setAuth = ()=>{
-    this.setState({is_authenticated: true})
+    this.setState({isAuthenticated: true})
 };
 
 unsetAuth = ()=>{
-    this.setState({is_authenticated: false})
+    this.setState({isAuthenticated: false})
 };
 
 
@@ -58,9 +54,10 @@ unsetAuth = ()=>{
                                                                                 setAuth={this.setAuth}
                                                                                 getAuth={this.getAuth}/>} />
                   <Route exact strict path="/signup" component={()=> <SignupForm getAuth={this.getAuth}/>} />
-                  <Route exact strict path="/reset_password" component={()=>(<ResetPassword getAuth={this.getAuth}/>)}/>
-                  <Route strict path="/businesses/:business_id" component={BusinessProfile}/>
-                  <Route strict path="/edit_business/:business_id" component={()=><EditBusiness getAuth={this.getAuth}/>}/>
+                  <Route exact path="/authuser/userprofile" component={()=> <UserProfile getAuth={this.getAuth}/>} />
+                  <Route exact strict path="/businesses/:business_id" component={BusinessProfile}/>
+                  <Route exact strict path="/search_results" component={SearchResults}/>
+                  <Route exact strict path="/edit_business/:business_id" component={()=><EditBusiness getAuth={this.getAuth}/>}/>
                   <Route strict path="/delete_business/:business_id" component={()=><DeleteBusiness getAuth={this.getAuth}/>}/>
               </div>
           </Router>
@@ -68,11 +65,13 @@ unsetAuth = ()=>{
 
     return (
       <div>
+          
 
-          <ToastContainer autoClose={8000}/>
+          <ToastContainer autoClose={5000}/>
 
           <Routes/>
-          {/*<BusinessRegistration/>*/}
+       
+        
 
       </div>
     );
