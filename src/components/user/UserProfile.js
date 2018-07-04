@@ -1,7 +1,7 @@
 import React from 'react';
 import NavigationBar from "../home/NavigationBar";
 import axios from "axios";
-import { Redirect, Link } from 'react-router-dom'
+import { Redirect} from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {  Card, CardHeader, CardText, CardBody, Row,
 		  Container, Col, CardTitle, CardSubtitle, 
@@ -86,11 +86,6 @@ class UserProfile extends React.Component {
 						this.setState({modal: !this.state.modal})
 
 					}
-					else{
-						toast.error(response.data.Message, {position: toast.POSITION.BOTTOM_CENTER});
-					}
-
-
 				})
 				.catch( error =>
 				{
@@ -124,21 +119,19 @@ class UserProfile extends React.Component {
 						<CardTitle></CardTitle>
 						<CardSubtitle>{business.business_category}</CardSubtitle>
 						<CardText>{business.business_description}</CardText>
-						<Link to={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></Link>
+						<a to={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
 					</CardBody>
 				</Card>
 			</Col>
 		);
 	})
 	return (
-		<div>
+		<div className="user-profile-background-image">
 			<NavigationBar auth={this.state.isAuthenticated}/>
 				<Container><br/>
 					<div className="row">
-					
 						<div className="col-6 ">
 						<h1 id="userprofile"> User Profile </h1><br/>
-
 						<Table striped>
 								<thead>
 									<tr>

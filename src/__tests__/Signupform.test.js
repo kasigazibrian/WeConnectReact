@@ -82,6 +82,10 @@ describe('Signup Component', ()=>{
         expect(signUpComponent.state('suggestions')).toContain('Add another word or two. Uncommon words are better.');
         password.simulate('change', {target: {name: "password",value: 'mango1231321AA'}});
         expect(signUpComponent.state('score')).toBe(4);
+        password.simulate('change', {target: {name: "password",value: 'mangoAgain'}});
+        expect(signUpComponent.state('score')).toBe(2);
+        password.simulate('change', {target: {name: "password",value: 'mango123...'}});
+        expect(signUpComponent.state('score')).toBe(3);
 
     })
    

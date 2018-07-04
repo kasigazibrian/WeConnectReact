@@ -3,7 +3,6 @@ import { Alert, Container } from 'reactstrap';
 import { toast } from 'react-toastify'
 import axios from 'axios'
 import NavigationBar from "../home/NavigationBar";
-import {withRouter } from 'react-router-dom'
 
 class LogOut extends React.Component{
 	constructor(props){
@@ -33,9 +32,6 @@ class LogOut extends React.Component{
 								this.setState({hasLoggedOut: true})
 
 						}
-						else{
-								toast.error(response.data.Message, {position: toast.POSITION.BOTTOM_CENTER});
-						}
 				 })
 				.catch( error =>{
 					if(error.response !== undefined){
@@ -47,18 +43,17 @@ class LogOut extends React.Component{
 						toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
 					}
 				})
-
 			}
 	    else{
-				this.setState({hasLoggedOut: true})
-
+				this.props.history.push('/login')
+				toast.error("Please login to view this page",{position: toast.POSITION.BOTTOM_CENTER});
 			}
 }
 render(){
 	if(this.state.hasLoggedOut){
 			setTimeout(()=> {
 					this.props.history.push('/')
-			}, 5000);
+			}, 3000);
 	}
 
 return (
@@ -75,4 +70,4 @@ return (
 );
 }
 }
-export default withRouter(LogOut);
+export default LogOut;
