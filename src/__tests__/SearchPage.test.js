@@ -12,7 +12,7 @@ global.getAuth = ()=>{
 describe('Business Search page Component', ()=>{
     const mock = new MockAdapter(axios)
     const wrapper = mount(<SearchPage getAuth={getAuth}/>)
-      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=BMW&category=Automobiles&location=Kabale`).reply(200,
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=BMW&category=Automobiles&location=Kabale&limit=6&page=1`).reply(200,
         {
           page: 1,
           limit: 20,
@@ -57,15 +57,24 @@ describe('Business Search page Component', ()=>{
     let location = wrapper.find('select[name="location"]')
     location.simulate('change', {target: {name: "location",value: 'Kabale'}});
 
-    let name = wrapper.find('input[name="business_name"]')
-    name.simulate('change', {target: {name: "business_name",value: 'BMW'}});
+    let name = wrapper.find('input[name="businessName"]')
+    name.simulate('change', {target: {name: "businessName",value: 'BMW'}});
     expect(wrapper.state('location')).toBe('Kabale');  
     expect(wrapper.state('category')).toBe('Automobiles');
-    expect(wrapper.state('business_name')).toBe('BMW');
+    expect(wrapper.state('businessName')).toBe('BMW');
    });
+   
+   it('should set state to null if value is Category or Location',()=>{
+    let category = wrapper.find('select[name="category"]')
+    category.simulate('change', {target: {name: "category",value: 'Category'}});
+    let location = wrapper.find('select[name="location"]')
+    location.simulate('change', {target: {name: "location",value: 'Location'}});
+    expect(wrapper.state('location')).toBe('');  
+    expect(wrapper.state('category')).toBe('');
+   })
 
    it('Should catch any errors returned', ()=>{
-      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=&category=&location=`).reply(400,{
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=&category=&location=&limit=6&page=1`).reply(400,{
         Message: "No businesses were obtained"}
     )
     const wrapper = mount(<SearchPage getAuth={getAuth}/>)
@@ -74,7 +83,7 @@ describe('Business Search page Component', ()=>{
    })
 
    it('Should return error if server is not running', ()=>{
-      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=&category=&location=`).networkError()
+      mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses?q=&category=&location=&limit=6&page=1`).networkError()
       const wrapper = mount(<SearchPage getAuth={getAuth}/>)
       let form = wrapper.find('form')
       form.simulate('submit')
@@ -83,12 +92,10 @@ describe('Business Search page Component', ()=>{
   it('Should handle submit',()=>{
       const wrapper = shallow(<MemoryRouter><SearchPage getAuth={getAuth}/></MemoryRouter>)
       const component = wrapper.find(SearchPage).dive()
-        component.setState({location: "Kabale", category: "Automobiles", business_name: "BMW"}, ()=>{
+        component.setState({location: "Kabale", category: "Automobiles", businessName: "BMW"}, ()=>{
         let form = component.find('form')
         form.simulate('submit',{preventDefault: ()=>{}})
-
       })
-
     })
 
     it('check it sets auth to false state when no token is provided', ()=>{
@@ -109,7 +116,7 @@ describe('Business Search page Component', ()=>{
           getItem: key =>{ return {"Token": "usertoken"}},
           setItem: (key, value)=> { store[key] = value},
           removeItem: key => Reflect.deleteProperty(store, key)
-          
+
       }
       const wrapper = mount(<SearchPage getAuth={getAuth}/>)
       expect(wrapper.state('isAuthenticated')).toBe(true);  

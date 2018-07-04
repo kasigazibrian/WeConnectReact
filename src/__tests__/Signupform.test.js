@@ -6,6 +6,13 @@ import axios from "axios";
 import { MemoryRouter }    from 'react-router-dom';
 import Config from '../App.config'
 
+let store = {};
+window.localStorage = {
+    getItem: key =>{ return null},
+    setItem: (key, value)=> { store[key] = value},
+    removeItem: key => Reflect.deleteProperty(store, key)
+    
+}
 describe('Signup Component', ()=>{
 
     const wrapper = shallow(<MemoryRouter><SignupForm/></MemoryRouter>);
@@ -36,19 +43,18 @@ describe('Signup Component', ()=>{
         // wrapper.find('form')
         let password = signUpComponent.find('input[name="password"]')
         password.simulate('change', {target: {name: "password",value: 'mango'}});
-        let first_name = signUpComponent.find('input[name="first_name"]')
-        first_name.simulate('change', {target: {name: "first_name",value: 'Mary'}});
+        let firstName = signUpComponent.find('input[name="firstName"]')
+        firstName.simulate('change', {target: {name: "firstName",value: 'Mary'}});
 
-        let last_name = signUpComponent.find('input[name="last_name"]')
-        last_name.simulate('change', {target: {name: "last_name",value: 'Lucy'}});
-        let email = signUpComponent.find('input[name="last_name"]')
+        let lastName = signUpComponent.find('input[name="lastName"]')
+        lastName.simulate('change', {target: {name: "lastName",value: 'Lucy'}});
+        let email = signUpComponent.find('input[name="email"]')
         email.simulate('change', {target: {name: "email",value: 'mary@gmail.com'}});
        
-        // console.log( wrapper.find('form').props())
         expect(signUpComponent.state('username')).toBe('mary');  
         expect(signUpComponent.state('password')).toBe('mango');
-        expect(signUpComponent.state('first_name')).toBe('Mary');
-        expect(signUpComponent.state('last_name')).toBe('Lucy');
+        expect(signUpComponent.state('firstName')).toBe('Mary');
+        expect(signUpComponent.state('lastName')).toBe('Lucy');
     });
 
     it('It handles submit', async ()=>{
@@ -63,6 +69,20 @@ describe('Signup Component', ()=>{
         await form.simulate('submit',  { preventDefault: ()=>{}})
         
     });
+    it('It handles server errors', async ()=>{
+        mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/register`).networkError()
+        const signUpComponent = wrapper.find(SignupForm).dive()
+        let confirmPassword = signUpComponent.find('input[name="confirmPassword"]')
+        confirmPassword.simulate('change', {target: {name: "confirmPassword",value: 'mango'}});
+
+        let password = signUpComponent.find('#password-input')
+        password.simulate('change', {target: {name: "password",value: 'mango'}});
+        const form = signUpComponent.find('form')
+        
+        await form.simulate('submit',  { preventDefault: ()=>{}})
+        
+    });
+   
    
 
     it('It checks the password strength',() =>{
@@ -81,28 +101,34 @@ describe('Signup Component', ()=>{
         expect(signUpComponent.state('score')).toBe(0);
 
     })
-    it('should handle bad request errors',()=>{
+        it('should handle bad request errors',()=>{
 			mock.onPost(`${Config.API_BASE_URL}/api/v2/auth/register`).reply(400,
 				{
-						Message: "Invalid email address",
-						Status: "Fail"
-					})
+                    Message: "Invalid email address",
+                    Status: "Fail"
+                })
 				const signUpComponent = mount(<SignupForm/>)
 				let spyOnHandleSubmit = jest.spyOn(signUpComponent.instance(), 'handleSubmit')
 				signUpComponent.instance().handleSubmit( { preventDefault: ()=>{}})
 				expect(spyOnHandleSubmit).toHaveBeenCalled()
 		})
 		it('should set state to false if token is null', ()=>{
-			let store = {};
-			window.localStorage = {
-			getItem: key =>{ return null},
-			setItem: (key, value)=> { store[key] = value},
-			removeItem: key => Reflect.deleteProperty(store, key)
-			
-		}
 		const signUpComponent = mount(<SignupForm/>)
 		expect(signUpComponent.state('isAuthenticated')).toBe(false)
-		})
+        })
+        
+        it('Should set state to true if token is not null', ()=>{
+            let store = {};
+            window.localStorage = {
+                getItem: key =>{ return {"Token": "usertoken"}},
+                setItem: (key, value)=> { store[key] = value},
+                removeItem: key => Reflect.deleteProperty(store, key)
+                
+            }
+            const wrapper = shallow(<MemoryRouter><SignupForm/></MemoryRouter>)
+            const signUpComponent = wrapper.find(SignupForm).dive()
+		    expect(signUpComponent.state('isAuthenticated')).toBe(true)
+        })
    
            
 

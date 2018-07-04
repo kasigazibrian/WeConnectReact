@@ -42,16 +42,18 @@ export default class SignupForm extends React.Component {
 					suggestions: evaluation.feedback.suggestions, message: ""});
 
 	};
-
+  // Function to handle user input change and set state
 	handleChange = e =>{
 			this.setState({[e.target.name] : e.target.value})
 
 	};
 
+	// Function to hanlde the signup form submission and post the user data to the API
 	handleSubmit = event => {
 			event.preventDefault();
+
 			if (this.state.password !== this.state.confirmPassword){
-					toast.error("Passwords must match",{position: toast.POSITION.BOTTOM_CENTER});
+				// toast.error("Passwords must match",{position: toast.POSITION.BOTTOM_CENTER});
 			}
 			else{
 			const user = {
@@ -62,7 +64,7 @@ export default class SignupForm extends React.Component {
 					gender: this.state.gender,
 					email: this.state.email
 			};
-
+  // Make post request to register new user
 	axios.post(`${Config.API_BASE_URL}/api/v2/auth/register`,
 		JSON.stringify(user),
 		{
@@ -83,7 +85,16 @@ export default class SignupForm extends React.Component {
 	}
 	};
 	render() {
-
+		// Check if user is already logged in and redirect them to home page
+		if(this.state.isAuthenticated){
+			toast.warn('You are already logged in!! Please log out to view this page', {position: toast.POSITION.TOP_RIGHT})
+				return(
+					<Redirect to={{
+						pathname: '/',
+				}}/>
+				)
+		}
+		// Check if user has been registered successfully and redirect them
 		if (this.state.addedSuccessfully){
 				return (
 						<div>
@@ -97,6 +108,7 @@ export default class SignupForm extends React.Component {
 		const {suggestions, score} = this.state;
 		let cssClass = "";
 		let message = "";
+		// Show password strength 
 		if (score === 0){
 			cssClass = "weak";
 			message = "Weak";
@@ -119,8 +131,8 @@ export default class SignupForm extends React.Component {
 			message = "Very Strong";
 		}
 		else {
-			message = "";
-			cssClass = ""
+			message = "weak";
+			cssClass = "Weak"
 		}
 
 			return (
@@ -146,7 +158,7 @@ export default class SignupForm extends React.Component {
 											<FormGroup >
 													<Col sm={"9"}>
 															<label id="last-name" name="last_name"  className="label-fontcolor"  >Last Name:</label>
-															<input name="last_name" onChange={this.handleChange} type="text" id="lastName"
+															<input name="lastName" onChange={this.handleChange} type="text" id="last_name"
 																			style={{borderRadius: "20px"}}
 																			className="form-control" required="true">
 

@@ -221,6 +221,13 @@ describe('Business Catalog Component', ()=>{
       expect (spyComponentDidMount).toHaveBeenCalled()
      })
 
+     it('sould call the onShowSizeChange for paginated results', ()=>{
+      const wrapper = mount(<BusinessCatalog/>);
+      let spyOnchange= jest.spyOn(wrapper.instance(), 'onShowSizeChange')
+      wrapper.instance().onShowSizeChange(1, 6)
+      expect(spyOnchange).toHaveBeenCalled()
+     })
+
 
    
 });

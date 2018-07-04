@@ -144,6 +144,18 @@ describe('Edit Business Component', ()=>{
         wrapper.instance().handleUpdateSubmit({ preventDefault: ()=>{}})
         expect(spyOnComponentDidMount).toHaveBeenCalled()
     })
+    it('Should handle bad request error',()=>{
+        mock.onPut(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(400, {
+            Message: "Not enough priviledge to perform action",
+            Status: "Fail"
+        })
+        const wrapper = mount(<EditBusiness match={match}/>)
+        let spyOnComponentDidMount = jest.spyOn(wrapper.instance(), 'componentWillMount')
+        // console.log(wrapper.instance())
+        wrapper.instance().componentWillMount()
+        wrapper.instance().handleUpdateSubmit({ preventDefault: ()=>{}})
+        expect(spyOnComponentDidMount).toHaveBeenCalled()
+    })
 
     it('should set isAuthenticated state to false if token is null',()=>{
         let store = {};

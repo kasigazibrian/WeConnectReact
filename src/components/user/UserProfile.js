@@ -3,13 +3,13 @@ import NavigationBar from "../home/NavigationBar";
 import axios from "axios";
 import { Redirect} from 'react-router-dom'
 import { toast } from 'react-toastify'
-import {  Card, CardHeader, CardText, CardBody, Row,
-		  Container, Col, CardTitle, CardSubtitle, 
+import {Container, Col, 
 		  Button, Modal, ModalHeader, ModalBody, 
 		  ModalFooter, FormGroup,  
 		  FormFeedback, Table, Input
 		 } from 'reactstrap';
 import Config from '../../App.config'
+import BusinessCards from '../business/BusinessCards';
 
 class UserProfile extends React.Component {
 	constructor(props) {
@@ -24,13 +24,14 @@ class UserProfile extends React.Component {
 			userProfile: {},
 			businesses: []
 		};
-
 		this.togglePasswordResetModal = this.togglePasswordResetModal.bind(this);
 	}
 	componentWillMount = ()=>{ 
+		// Check for user authentication
 		if (localStorage.getItem('token') !== null){
 			this.setState({isAuthenticated: true})
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
+			// Get user profile infromation
 			axios.get(`${Config.API_BASE_URL}/api/v2/auth/register`,  {
 				headers: {'Content-Type':'application/json'}
 			})
@@ -53,12 +54,13 @@ class UserProfile extends React.Component {
 		else( this.setState({isAuthenticated: false}) )
 	}
 	
-
+  // Display password reset modal when the reset password button is selected
 	togglePasswordResetModal= ()=> {
 		this.setState({
 			modal: !this.state.modal
 		});
 	}
+	// function to help give user feedaback to ensure the passwords match
 	handleConfirmPasswordChange= event => {
 		if(event.target.value !== this.state.password){
 			this.setState({invalid: true, valid: false})
@@ -67,15 +69,17 @@ class UserProfile extends React.Component {
 			this.setState({[event.target.name]: event.target.value, invalid: false, valid: true})
 		}
 	}   
-	  
+	// Get content input into the password field and save it in the state
 	handlePasswordChange = event =>{
 		this.setState({[event.target.name]: event.target.value})
 	
 	}
+	// Handle submission of the reset password modal form
 	handleSubmit = event =>{
 		event.preventDefault();
 		if(this.state.valid){
 		const newPassword = {new_password: this.state.password}
+		// make post request to the API with the new password
 		axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
 			axios.post(`${Config.API_BASE_URL}/api/v2/auth/reset-password`, JSON.stringify(newPassword), {
 				headers: {'Content-Type':'application/json', 'Accept': 'application/json'}
@@ -103,7 +107,7 @@ class UserProfile extends React.Component {
 			}
 	}
   render() {
-
+		// Check if user is authenticated and redirect them if false
 	if(this.state.isAuthenticated === false){
 		toast.error("Please login to view this page", {position: toast.POSITION.BOTTOM_CENTER});
 		return (<Redirect to={{
@@ -111,21 +115,7 @@ class UserProfile extends React.Component {
 		}} />);
 	}
 	
-	let businesses = this.state.businesses.map((business, index)=>{
-		return (
-			<Col sm={"4"} key={index}>
-				<Card body style={{marginTop: '20px'}} >
-					<CardBody>
-						<CardHeader tag="h1" >{business.business_name}</CardHeader>
-						<CardTitle></CardTitle>
-						<CardSubtitle>{business.business_category}</CardSubtitle>
-						<CardText>{business.business_description}</CardText>
-						<a href={`/businesses/${business.business_id}`}><Button className="btn-info" >View Details</Button></a>
-					</CardBody>
-				</Card>
-			</Col>
-		);
-	})
+	let { businesses } = this.state
 	return (
 		<div className="user-profile-background-image">
 			<NavigationBar auth={this.state.isAuthenticated}/>
@@ -176,13 +166,9 @@ class UserProfile extends React.Component {
 					</div><br/><br/>
 					<h1 id="registered_businesses">Your Registered Businesses</h1>
 					<hr/>
-						<Row>
-						{businesses}
-
-					</Row>
+					<BusinessCards businesses={businesses}/>
 					</Container>
 					<div>
-					
 					<form onSubmit={this.handleSubmit}>
 					<Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
 						<ModalHeader toggle={this.togglePasswordResetModal}>Reset Password</ModalHeader>

@@ -19,6 +19,7 @@ class LogOut extends React.Component{
 		// Check for user authentication
 		if(localStorage.getItem('token') !== null){
 				axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
+				//Make post request to log out the user
 				axios.post(`${Config.API_BASE_URL}/api/v2/auth/logout`, {
 					headers: {'Content-Type':'application/json', 'Accept': 'application/json'}
 				})
