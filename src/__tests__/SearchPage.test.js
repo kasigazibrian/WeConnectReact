@@ -3,7 +3,7 @@ import { shallow, mount } from 'enzyme';
 import MockAdapter from 'axios-mock-adapter'
 import { MemoryRouter } from 'react-router-dom'
 import axios from 'axios'
-import SearchPage from '../components/business/searchpage';
+import SearchPage from '../components/business/SearchPage';
 import Config from '../App.config'
 
 global.getAuth = ()=>{

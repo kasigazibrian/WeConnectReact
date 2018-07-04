@@ -28,7 +28,7 @@ export default class SignupForm extends React.Component {
 }
 
 	componentWillMount(){
-		// Check for user authentiucation
+	// Check for user authentiucation
 			if (localStorage.getItem('token') === null){
 				this.setState({isAuthenticated: false})
 			}
