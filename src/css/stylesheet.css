@@ -1,0 +1,201 @@
+.login-background-image{
+    background-image: url("../images/BUSINESS2.jpeg");
+    background-size:     cover;
+    background-repeat:   no-repeat;
+    height: auto;
+    padding-bottom: 280px;
+
+}
+
+.signup-background-image{
+    background-image: url("../images/signupBI.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: auto;
+    padding-bottom: 100px;
+}
+
+
+.login-wrapping {
+    box-sizing: border-box;
+    width: 100%;
+    margin: auto;
+    margin-top: 40px;
+    padding-top: 30px;
+    max-width: 450px;
+    min-height: 420px;
+    position: relative;
+    background-color: #343a40;
+    border-radius: 5%;
+    box-shadow: 0 12px 15px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);
+}
+
+.label-fontcolor{
+    color: #fdfdfe;
+
+
+}
+.rememberme{
+    padding-left: 25px;
+    color: #fdfdfe;
+}
+.signup-wrapping {
+    box-sizing: border-box;
+    width: 100%;
+    margin: auto;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding-top: 30px;
+    border-radius: 20px;
+    padding-bottom: 30px;
+    max-width: 450px;
+    min-height: 700px;
+    position: relative;
+    background-color: #343a40;
+    /*background: rgba(40,57,101,.9);*/
+    box-shadow: 0 12px 15px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);
+}
+
+.carousel-item img{
+    height: 100vh;
+    width: auto;
+}
+
+/*.carousel-item > img {*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+
+/*}*/
+
+.my-button{
+    position: absolute;
+    top: 500px;
+    z-index: 100;
+    left: 700px;
+}
+
+.search-bar{
+    position: absolute;
+    top: 30%;
+    margin-top: -50px;
+    width: 100%;
+}
+
+.nav-item-name-properties{
+    margin-right: 20px;
+
+}
+ .my-labels{
+     font-size: 20px;
+     color: white !important;
+     margin-top: 12px;
+     width: 80px;
+ }
+
+ .my-input{
+     height: 37px;
+     border-radius: 5px;
+     margin-top: 12px;
+     margin-right: 30px;
+ }
+
+ .my-h1{
+     font-size: 28px;
+     color: #fdfdfe;
+ }
+
+ .my-logo{
+     background-image: url("../images/BIGLOGO.png");
+     background-size:     cover;
+     background-repeat:   no-repeat;
+     padding-top: 18%;
+ }
+ .official-logo{
+     background-image: url("../images//logo.png");
+ }
+
+.reset-password-wrapping {
+    position: relative;
+    background-color: black;
+    padding-bottom: 500px;
+    /*border-radius: 5%;*/
+    /*box-shadow: 0 12px 15px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);*/
+}
+
+.my-label-fontcolor{
+    color: black;
+}
+
+.content-left {
+   
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding-right: 30px;
+}
+.content-right {
+    position: relative;
+    margin-top: 50px;
+    margin-bottom: 40px;
+    /* border-left: 2px double #17a2b8; */
+}
+
+.my-buttons{
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    width: 90%;
+
+}
+
+.profile-labels{
+    font-family: "Comic Sans MS";
+    font-size: 15px;
+}
+
+.weak{
+    color: red;
+    padding-left: 40px;
+}
+.fair{
+    color: orange;
+    padding-left: 40px;
+}
+.strong{
+    color: lightgreen;
+    padding-left: 40px;
+}
+.good{
+    color: yellow;
+    padding-left: 40px;
+}
+.very-strong{
+    color: green;
+    padding-left: 40px;
+}
+
+.review{
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+ul {
+    list-style-type: none;
+  }
+
+.background-profile-image{
+    background-image: url("../images/businessprofile.jpg");
+    background-size:     cover;
+    background-repeat:   no-repeat;
+    height: auto;
+    padding-bottom: 100px;
+    
+}
+.user-profile-background-image{
+    background-image: url("../images/userprofile.jpg");
+    background-size:     cover;
+    background-repeat:   no-repeat;
+    height: auto;
+    /* padding-bottom: 100px; */
+    
+}

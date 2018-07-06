@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "stable"
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - npm test
+  - npm run coverage
+after_script:
+  - "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -r 0ae2d96ae0e3a8cea17125c1214cf9211c3bf9bc6762426499823e8ae8e74460
