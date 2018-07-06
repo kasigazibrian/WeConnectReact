@@ -23,6 +23,8 @@ export default class SearchPage extends React.Component {
 			category: "",
 			location: "",
 			businessName: "",
+			perPage: 6,
+			isActive: 1,
 			count: 0,
 			businesses: []
 		};
@@ -42,16 +44,22 @@ export default class SearchPage extends React.Component {
 	};
 	// Function to handle submit of the search input values
 	handleSubmit = event =>{
-		const { businessName, category, location} = this.state;
+		const { businessName, category, location, isActive, perPage} = this.state;
 		event.preventDefault();
-		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?q=${businessName}&category=${category}&location=${location}`,
+		// Search get request to the API
+		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?q=${businessName}&category=${category}&location=${location}&limit=${perPage}&page=${isActive}`,
 			{
 				headers: {'Content-Type':'application/json'}
 			})
 			.then(response=> {
 				toast.success("We have found "+response.data.count + " results", {position: toast.POSITION.TOP_CENTER});
-				// Set state with recieved data
-				this.setState({businesses: response.data.Businesses, count: response.data.count});
+				// Set businesses state with recieved data
+				this.setState({
+					businesses: response.data.Businesses, 
+					count: response.data.count,
+					perPage: response.data.limit,
+					isActive: response.data.page
+				});
 			})
 			.catch(error =>{
 				if(error.response !== undefined){
@@ -64,21 +72,21 @@ export default class SearchPage extends React.Component {
 			});
 
 	};
-	// Funtion to toggle navigation bar when window is not maximised
+	// Function to toggle navigation bar when window is not maximised
 	toggle = ()=> {
 		this.setState({
 			isOpen: !this.state.isOpen
 		});
 	}
 	render() {
-		const { count, businesses } = this.state;
+	 	const { count } = this.state;
 		// Check if search results have been obtained successfully
 		if (count > 0){
 			return (
 				<div>
 					<Redirect to={{
 						pathname: '/search_results',
-						state: {businesses: businesses }
+						state: {searchObject: this.state}
 					}} />
 				</div>);
 		}
@@ -97,7 +105,7 @@ export default class SearchPage extends React.Component {
 										<Collapse isOpen={this.state.isOpen} navbar>
 											<Nav className="ml-auto" navbar>
 												<NavItem className='nav-item-name-properties'>
-													<input onChange={this.handleSearchInputChange} name="business_name" placeholder="Enter Business Name" className="my-input" type="text" id="components"/>
+													<input onChange={this.handleSearchInputChange} name="businessName" placeholder="Enter Business Name" className="my-input" type="text" id="components"/>
 												</NavItem>
 												<NavItem className='nav-item-name-properties'>
 													<label  className='my-labels'>Filter By:</label>
@@ -119,6 +127,7 @@ export default class SearchPage extends React.Component {
 														<option value="wakiso">Wakiso</option>
 														<option value="kabale">Kabale</option>
 														<option value="mbarara">Mbarara</option>
+														<option value="kampala">Kampala</option>
 														<option value="rukungiri">Rukungiri</option>
 													</Input>
 												</NavItem>
@@ -137,3 +146,4 @@ export default class SearchPage extends React.Component {
 		);
 	}
 }
+

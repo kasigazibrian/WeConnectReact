@@ -3,6 +3,7 @@ Front-End using react to consume the We Connect [API](https://we-connect--api-ka
 
 [![Build Status](https://travis-ci.org/kasigazibrian/WeConnectReact.svg?branch=ch-add-coveralls-157835150)](https://travis-ci.org/kasigazibrian/WeConnectReact)
 [![Coverage Status](https://coveralls.io/repos/github/kasigazibrian/WeConnectReact/badge.svg?branch=ch-add-coveralls-157835150)](https://coveralls.io/github/kasigazibrian/WeConnectReact?branch=ch-add-coveralls-157835150)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/fb62b21b8c0fa74c7665/test_coverage)](https://codeclimate.com/github/kasigazibrian/WeConnectReact/test_coverage)
 
 ## Description
 WeConnect provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.

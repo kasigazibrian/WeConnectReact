@@ -39,7 +39,7 @@ describe('Business Profile Component', ()=>{
       Message: "Review has been added successfully",
       Status: "Success"
     })
-    mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/2`).reply(200,
+    mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(200,
     {
        page: 1,
        limit: 20,
@@ -189,6 +189,11 @@ describe('Business Profile Component', ()=>{
         {
           Message: "No review has been added"
         })
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1`).reply(400,
+          {
+            Message: "Business with this id not found"
+          }
+        )
         mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).reply(400,{
          Message: "No business reviews found"
         })
@@ -215,6 +220,7 @@ describe('Business Profile Component', ()=>{
         mock.onPost(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).networkError()
         mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1/reviews`).networkError()
         mock.onDelete(`${Config.API_BASE_URL}/api/v2/businesses/1`).networkError()
+        mock.onGet(`${Config.API_BASE_URL}/api/v2/businesses/1`).networkError()
         const wrapper = shallow(<MemoryRouter><BusinessProfile match={{params: {business_id: 1}}}/></MemoryRouter>);
         const businessProfileComponent = wrapper.find(BusinessProfile).dive()
         let spyOnHandleSubmit = jest.spyOn(businessProfileComponent.instance(), 'handleDelete') 

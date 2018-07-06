@@ -73,6 +73,7 @@ class EditBusiness extends React.Component{
 					business_description: this.state.businessDescription
 			};
 			axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
+			// Make a PUT request to edit business details
 			axios.put(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`,
 					JSON.stringify(business),
 					{headers: {'Content-Type': 'application/json'}

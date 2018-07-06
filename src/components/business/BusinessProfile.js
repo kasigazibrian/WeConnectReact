@@ -50,7 +50,7 @@ class BusinessProfile extends React.Component{
 	 // Function to return a specific business
 	axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`)
 		.then(response=> {
-				this.setState({business: response.data.Businesses[0]
+			this.setState({business: response.data.Businesses[0]
 			})
 		})
 		.catch(error =>{
@@ -96,9 +96,6 @@ class BusinessProfile extends React.Component{
 							toast.success(response.data.Message,{position: toast.POSITION.TOP_CENTER});
 							this.setState({modal: !this.state.modal, deletedSuccessfully: true})
 						}
-						else{
-							toast.error(response.data.Message, {position: toast.POSITION.BOTTOM_CENTER});
-					  }
 				})
 				.catch( error =>
 				{
@@ -127,7 +124,6 @@ class BusinessProfile extends React.Component{
 				if (res.data.Status === "Success") {
 					toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
 					this.getReviews(this.state.businessId)
-					
 				}
 				else{
 						toast.success(res.data.Message, {position: toast.POSITION.TOP_CENTER});
@@ -146,12 +142,14 @@ class BusinessProfile extends React.Component{
 
 render(){
 	const {reviews, business } =  this.state;
+	// check if user is logged or route them to the login page
 	if(this.state.isAuthenticated === false){
 		toast.error("Please login to view this page", {position: toast.POSITION.BOTTOM_CENTER});
 		return (<Redirect to={{
 			pathname: '/login'
 		}} />);
 	}
+	// Check if business has been deleted successfully and redirect the user
 	if(this.state.deletedSuccessfully === true){
 		return (<Redirect push=
 			{true} to={{

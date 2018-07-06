@@ -14,6 +14,7 @@
     "jquery": "^3.3.1",
     "npm": "^6.1.0",
     "rc-pagination": "^1.16.4",
+    "rc-select": "^8.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-icons": "^2.2.7",
@@ -54,5 +55,4 @@
     "react-router-enzyme-context": "^1.2.0",
     "sinon": "^6.0.0"
   }
-  
 }

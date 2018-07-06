@@ -11,12 +11,12 @@ class BusinessRegistration extends React.Component {
 	constructor(props) {
 			super(props);
 			this.state = {
-					business_name: "",
-					business_category: "",
-					business_location: "",
-					business_email: "",
-					contact_number: "",
-					business_description: "",
+					businessName: "",
+					businessCategory: "",
+					businessLocation: "",
+					businessEmail: "",
+					contactNumber: "",
+					businessDescription: "",
 					isAuthenticated: false,
 					registeredSuccessfully: false
 			}
@@ -36,16 +36,16 @@ class BusinessRegistration extends React.Component {
 	// Function to handle form submission for registering a new business
 	handleSubmit = event => {
 		event.preventDefault();
-
 		const business = {
-			business_name: this.state.business_name,
-			business_category: this.state.business_category,
-			business_location: this.state.business_location,
-			business_email: this.state.business_email,
-			contact_number: this.state.contact_number,
-			business_description: this.state.business_description
+			business_name: this.state.businessName,
+			business_category: this.state.businessCategory,
+			business_location: this.state.businessLocation,
+			business_email: this.state.businessEmail,
+			contact_number: this.state.contactNumber,
+			business_description: this.state.businessDescription
 		};
 		axios.defaults.headers.common['access-token'] = localStorage.getItem('token');
+		// Make post request to register a new business
 		axios.post(`${Config.API_BASE_URL}/api/v2/businesses`,
 			JSON.stringify(business),
 			{
@@ -95,39 +95,39 @@ class BusinessRegistration extends React.Component {
 						<FormGroup>
 							<Col sm={"6"}>
 								<Label id="user">Business Name:</Label>
-								<input name="business_name" onChange={this.handleChange} type="text" style={{borderRadius: "20px"}} className="form-control" required="true"/>
+								<input name="businessName" onChange={this.handleChange} type="text" style={{borderRadius: "20px"}} className="form-control" required="true"/>
 							</Col>
 						</FormGroup>
 						<FormGroup>
 								<Col sm={"6"}>
 									<Label id="user">Business Location:</Label>
-									<input name="business_location" onChange={this.handleChange} type="text" style={{borderRadius: "20px"}} className="form-control" required="true"/>
+									<input name="businessLocation" onChange={this.handleChange} type="text" style={{borderRadius: "20px"}} className="form-control" required="true"/>
 								</Col>
 						</FormGroup>
 						<FormGroup>
 								<Col sm={"6"}>
 									<Label id="user">Business Email:</Label>
-									<input name="business_email" onChange={this.handleChange} type="email" style={{borderRadius: "20px"}} className="form-control" required="true"/>
+									<input name="businessEmail" onChange={this.handleChange} type="email" style={{borderRadius: "20px"}} className="form-control" required="true"/>
 								</Col>
 						</FormGroup>
 						<FormGroup>
 								<Col sm={"6"}>
 									<Label for="contact_number">Contact Number:</Label>
-									<input name="contact_number" onChange={this.handleChange} type="text" id="contact_number" style={{borderRadius: "20px"}}
+									<input name="contactNumber" onChange={this.handleChange} type="text" id="contact_number" style={{borderRadius: "20px"}}
 														className="form-control" required="true"/>
 								</Col>
 						</FormGroup>
 						<FormGroup>
 								<Col sm={"6"}>
 									<Label>Business Description:</Label>
-									<Input name="business_description" onChange={this.handleChange} type="textarea" id="business_description" style={{borderRadius: "20px"}}
+									<Input name="businessDescription" onChange={this.handleChange} type="textarea" id="business_description" style={{borderRadius: "20px"}}
 														className="form-control" required="true"/>
 								</Col>
 						</FormGroup>
 						<FormGroup>
 								<Col sm={"6"}>
-									<Label for="exampleSelect">Business Category:</Label>
-									<Input name="business_category" onChange={this.handleChange} type="select" id="businessCategory">
+									<Label for="categorySelect">Business Category:</Label>
+									<Input name="businessCategory" onChange={this.handleChange} type="select" id="business_category">
 											<option value="Entertainment">Entertainment</option>
 											<option value="Real Estate">Real Estate</option>
 											<option value="Education">Education</option>
