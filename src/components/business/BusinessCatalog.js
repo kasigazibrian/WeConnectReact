@@ -21,12 +21,14 @@ class BusinessCatalog extends React.Component {
 		}
 	}
 	componentWillMount = () =>{
+		// Funtion to check for user authentication
 		if (localStorage.getItem('token') !== null){
 			this.setState({isAuthenticated: true})
 		}
 		else( this.setState({isAuthenticated: false}) )
 	}
 	onChange = (page, pageSize) => {
+		// Funtion to get next page and previous page content
 		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?limit=${pageSize}&page=${page}`)
 			.then(response=> {
 				this.setState({
@@ -49,6 +51,7 @@ class BusinessCatalog extends React.Component {
 	};
 
 	componentDidMount = ()=>{
+		// Function to obtain paginated businesses 
 		axios.get(`${Config.API_BASE_URL}/api/v2/businesses?limit=${this.state.perPage}&page=${this.state.activePage}`)
 			.then(response=> {
 				this.setState({
@@ -68,15 +71,17 @@ class BusinessCatalog extends React.Component {
 			});
 
 }
+// Function to return the total count of businesses on the page
 showTotal = (total)=> `Total ${total} Businesses`;
 
-
+  // Funcion to render the component
 	render(){
+
+		// Function to destructure the business list
 		let businesses = this.state.businesses.map((business, index)=>{
 			return (
 				<Col sm={"4"} key={index}>
 					<Card body style={{marginTop: '20px'}} >
-
 						<CardBody>
 							<CardHeader tag="h1" >{business.business_name}</CardHeader>
 							<CardTitle></CardTitle>
@@ -92,9 +97,7 @@ showTotal = (total)=> `Total ${total} Businesses`;
 	   return(
 		   <div >
 		   <NavigationBar auth={this.state.isAuthenticated}/>
-
 		   <Container fluid>
-
 			   <Pagination current={this.state.isActive}
 						   total={this.state.count}
 						   onChange={this.onChange}
@@ -104,12 +107,9 @@ showTotal = (total)=> `Total ${total} Businesses`;
 						   style={{ marginTop: "15px"}}
 						   showTitle={false}
 						   showTotal={this.showTotal}/>
-
 			   <Row>
 				   {businesses}
-
 			   </Row>
-
 		   </Container>
 		   </div>
 	   )

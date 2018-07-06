@@ -4,7 +4,7 @@ import EditBusiness from "../components/business/Editbusiness";
 import MockAdapter from 'axios-mock-adapter';
 import axios from "axios";
 import Config from '../App.config'
-import { MemoryRouter }    from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 
 global.getAuth = ()=>{

@@ -22,47 +22,48 @@ class EditBusiness extends React.Component{
 					updatedSuccessfully: false
 			}
 	}
-
 	componentWillMount = () => {
+			// Function to check for user authentication 
 			if (localStorage.getItem('token') === null) {
 					this.setState({isAuthenticated: false});
 					this.props.history.push('/login');
 					toast.error("Please login", {position: toast.POSITION.BOTTOM_CENTER});
-
 			}
 			else {
-					this.setState({isAuthenticated: true});
-					axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`)
-							.then(response=> {
-									this.setState({
-											businessName: response.data.Businesses[0].business_name,
-											businessCategory: response.data.Businesses[0].business_category,
-											businessLocation: response.data.Businesses[0].business_location,
-											businessEmail: response.data.Businesses[0].business_email,
-											contactNumber: response.data.Businesses[0].contact_number,
-											businessDescription: response.data.Businesses[0].business_description,
-											businessId: response.data.Businesses[0].business_id
-									})
-							})
-							.catch(error =>{
-								if(error.response !== undefined){
-									toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
-								}
-								else{
-									toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
-								}
+				this.setState({isAuthenticated: true});
+				// Function to retrieve business information
+				axios.get(`${Config.API_BASE_URL}/api/v2/businesses/${this.state.businessId}`)
+						.then(response=> {
+								this.setState({
+										businessName: response.data.Businesses[0].business_name,
+										businessCategory: response.data.Businesses[0].business_category,
+										businessLocation: response.data.Businesses[0].business_location,
+										businessEmail: response.data.Businesses[0].business_email,
+										contactNumber: response.data.Businesses[0].contact_number,
+										businessDescription: response.data.Businesses[0].business_description,
+										businessId: response.data.Businesses[0].business_id
+								})
+						})
+						.catch(error =>{
+							if(error.response !== undefined){
+								toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
+							}
+							else{
+								toast.error("Server ERROR Contact Administrator",{position: toast.POSITION.BOTTOM_CENTER});
+						}
 
-							});
+				} );
 			}
 	}
+	// Function to handle user input change
 	handleChange = event => {
 			this.setState({[event.target.name]: event.target.value});
 			
 	};
 	
+	// Function to handle edit business submission
 	handleUpdateSubmit = event => {
 			event.preventDefault();
-			// console.log(this.state.businessId)
 			const business = {
 					business_name: this.state.businessName,
 					business_category: this.state.businessCategory,
@@ -82,7 +83,6 @@ class EditBusiness extends React.Component{
 					})
 					.catch(error => {
 						if(error.response !== undefined){
-							// console.log(error.response)
 							toast.error(error.response.data.Message,{position: toast.POSITION.BOTTOM_CENTER});
 						}
 						else{
@@ -91,7 +91,7 @@ class EditBusiness extends React.Component{
 					})
 	};
 render(){
-
+	// Check if business has been updated successfully and redirect user to the business profile page
 	if (this.state.updatedSuccessfully){
 			return(
 				<Redirect to={`/businesses/${this.state.businessId}`}/>	

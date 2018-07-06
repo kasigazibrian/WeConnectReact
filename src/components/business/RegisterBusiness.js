@@ -22,16 +22,18 @@ class BusinessRegistration extends React.Component {
 			}
 	}
 	componentWillMount() {
+		// Function to check for user authentication 
 		if (localStorage.getItem('token') === null)
 				(this.setState({isAuthenticated: false}))
 		else
 		(this.setState({isAuthenticated: true}))
 	}
-
+	// Function to handle user input change and set state
 	handleChange = event => {
 		this.setState({[event.target.name]: event.target.value});
 	};
-
+	
+	// Function to handle form submission for registering a new business
 	handleSubmit = event => {
 		event.preventDefault();
 
@@ -67,13 +69,14 @@ class BusinessRegistration extends React.Component {
 
 
 	render(){
+		// Check for user authentication and restrict page access if not authenticated
 		if(this.state.isAuthenticated !== true){
 			toast.error("Please login to view this page", {position: toast.POSITION.BOTTOM_CENTER});
 			return (<Redirect to={{
 					pathname: '/login'
 			}} />);
 		}
-
+		// Check if business registered successfully and redirect to business catalog page
 		if(this.state.registeredSuccessfully) {
 			return (<Redirect to={{
 							pathname: '/businesses'
