@@ -11,6 +11,7 @@
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "enzyme-to-json": "^3.3.4",
+    "eslint": "^5.14.1",
     "jquery": "^3.3.1",
     "npm": "^6.1.0",
     "rc-pagination": "^1.16.4",
@@ -41,7 +42,6 @@
   "devDependencies": {
     "axios-mock-adapter": "^1.15.0",
     "chai": "^4.1.2",
-    "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.13.0",
