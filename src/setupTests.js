@@ -1,7 +1,7 @@
-import { configure } from 'enzyme';
+import {configure} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-configure({ adapter: new Adapter() });
+configure({adapter: new Adapter()});
 
 // browser mocks
 const localStorageMock = {
@@ -10,4 +10,4 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn()
 };
-global.localStorage = localStorageMock
+global.localStorage = localStorageMock;
